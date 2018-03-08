@@ -1,0 +1,15 @@
+* hypertube
+** Example
+Pulp fiction: =http://www.imdb.com/title/tt0110912/=
+
+Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/api][YTS]] 
+#+BEGIN_SRC bash
+    imdbId=tt0110912
+    curl "https://yts.am/api/v2/list_movies.json?query_term=${imdbId}"
+    token=$(curl "https://torrentapi.org/pubapi_v2.php?get_token=get_token" | sed -n 's/.*"token":"\(.*\)"}/\1/p')
+    curl "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb=${imdbId}&token=${token}"
+#+END_SRC
+
+** Modules idea
+- https://github.com/mafintosh/torrent-stream
+- https://www.npmjs.com/package/opensubtitles-api
