@@ -13,3 +13,12 @@ Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/a
 ** Modules idea
 - https://github.com/mafintosh/torrent-stream
 - https://www.npmjs.com/package/opensubtitles-api
+
+* API
+** DRAFT
+- =/auth=: [[https://github.com/websanova/vue-auth/blob/master/docs/Options.md][vue-auth]]
+- =/users=: GET
+- =/movies=: GET, POST
+- =/subtitles=: GET
+- =/comments=: GET, POST
+- =/views=: POST, GET
