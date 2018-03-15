@@ -4,6 +4,34 @@
       <div class="white elevation-2">
         <v-toolbar flat dense class="red" dark>
           <v-toolbar-title>
+            Inscription
+          </v-toolbar-title>
+        </v-toolbar>
+        <div class="pl-4 pr-4 pt-2 pb-2">
+          <v-text-field
+            name="email"
+            label="Email"
+            type="email"
+            v-model="email" light>
+          </v-text-field>
+          <v-text-field
+            name="password"
+            label="Mot de passe"
+            type="password"
+            v-model="password" light>
+          </v-text-field>
+          <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
+          <br>
+          <v-btn
+            class="red" dark
+            @click="register">
+            S'inscrire
+          </v-btn>
+        </div>
+      </div>
+      <div class="white elevation-2">
+        <v-toolbar flat dense class="red" dark>
+          <v-toolbar-title>
             Connexion
           </v-toolbar-title>
         </v-toolbar>

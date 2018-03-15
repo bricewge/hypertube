@@ -1,0 +1,35 @@
+$dark: #191a1c; //rgb(25,26,28);
+$darker: #121214; //rgb(18,18,20);
+$dark-border: #060707; //rgb(6,7,7);
+$red: #e82535; //rgb(232, 37, 53);
+$grey-txt: #716e6f; //rgb(113, 110, 111);
+$white: #f3f3f4; //rgb(243,243,244);
+$darker-grey-txt: #494949; //rgb(73,73,73);
+$blue: #2c3b6c; //rgb(44,59,108);
+$facebook-blue: #3d5c98; //rgb(61,92,152);
+$google-red: #d43335; //rgb(212,51,53);
+
+$font: 'Avenir', Helvetica, Arial, sans-serif;
+
+#app{
+  background: $dark;
+}
+
+header{
+  text-align: center;
+  background: $dark;
+}
+
+.test{
+  background: red !important;
+}
+
+header img{
+  height: 3.5em;
+}
+
+header img, header .link-cntnr{
+  display: inline;
+  vertical-align: top;
+  border: 1px solid red;
+}
