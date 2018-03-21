@@ -1,0 +1,13 @@
+#+TITLE: ft-torrent
+* TODO
+** [#A] Proof Of Concept [1/4]
+- [X] discover peers
+- [ ] fetch metadata
+- [ ] download file senquencially
+- [ ] stream file to HTTP
+** reuse DHT instance when downloading multiple files
+** retry connection to peer
+When error try to reconnect to the peer several times
+** get peers form swarm
+** specify part of the file to be downloaded
+** support trackers to get peers
