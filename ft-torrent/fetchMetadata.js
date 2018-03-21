@@ -27,15 +27,21 @@ function connectToPeers () {
     const socket = new net.Socket()
     socket.connect(peer.port, peer.address, () => {
       const wire = new Protocol()
+      wire.use(ut_metadata())
       socket.pipe(wire).pipe(socket)
       wire.handshake(config.infoHash, config.selfId, { dht: true })
       wire.on('handshake', (ih, ip, ext) => {
+        wire.ut_metadata.fetch()
         console.log('received handshake:', ih, ip, ext)
-        // socket.destroy()
+      })
+      return wire.ut_metadata.on('metadata', function (rawMetadata) {
+        let metadata = bencode.decode(rawMetadata, 'utf8')
+        console.log(metadata)
+        return metadata
       })
     })
     socket.on('error', (err) => {
-      console.log(err)
+      console.log(err.errno)
       !socket.destroyed && socket.destroy()
     })
   }
