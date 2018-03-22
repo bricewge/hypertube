@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
+const {User} = require('./models')
 const {sequelize} = require('./models')
 const config = require('./config/config')
 
@@ -10,44 +11,53 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
-require('./routes')(app)
+var passport = require('passport')
+var FacebookStrategy = require('passport-facebook').Strategy
+var pass = require('./oauth.js')
+console.log(User)
+passport.use(new FacebookStrategy(pass.facebook,
+  (accessToken, refreshToken, profile, cb) => {
+    console.log(profile)
+    User.findOrCreate({ where: {facebookId: profile.id},
+      defaults: {
+        email: profile.emails[0].value,
+        login: profile.username || profile.displayName,
+        firstname: profile.givenName,
+        name: profile.familyName,
+        image_url: profile.picture
+      }}, function (err, user) {
+      return cb(err, user)
+    })
+  }
+))
 
-var FacebookStrategy = require('passport-facebook').Strategy;
-var config = require('./oauth.js');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
-passport.use('facebook', new FacebookStrategy({
-      clientID        : config.facebook.clientID,
-      clientSecret    : config.facebook.clientSecret,
-      callbackURL     : config.facebook.callbackURL,
-      profileFields: ['id', 'emails', 'name']
-    },
-
-    function(access_token, refresh_token, profile, done) {
-      process.nextTick(function() {
-        Account.findOne({ 'username' : profile.emails[0].value }, function(err, user) {
-          if (err)
-            return done(err);
-          if (user) {
-            if (err)
-              return done(err);
-            else
-              return done(null, user);
-          } else {
-            if (err)
-              return done(err);
-
-            Account.register(new Account({ username : profile.emails[0].value }), profile.id, function(err, account) {
-              if (err)
-                return done(err);
-              else
-                return done(null, account);
-            });
-          }
-        });
-      });
+passport.use(new GoogleStrategy(pass.google,
+  function (accessToken, refreshToken, profile, cb) {
+    var obj = { where: { googleId: profile.id },
+      defaults: {
+        email: 'lodnjfn'
+      }
     }
-));
+    console.log(obj)
+    User.findOrCreate(obj, function (err, user) {
+      return cb(err, user)
+    })
+  }
+))
 
+var FortyTwoStrategy = require('passport-42').Strategy
+
+passport.use(new FortyTwoStrategy(pass.fortyTwo,
+  (accessToken, refreshToken, profile, cb) => {
+    User.findOrCreate({where: { fortyTwoId: profile.id }}, function (err, user) {
+      return cb(err, user)
+    })
+  }
+))
+
+require('./routes')(app, passport)
 sequelize.sync()
   .then(() => {
     app.listen(config.port)

@@ -21,16 +21,39 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true
     },
-    password: DataTypes.STRING
-  }, {
-    hooks: {
-      beforeSave: hashPassword
+    password: {
+      type: DataTypes.STRING,
+      hooks: {
+        beforeSave: hashPassword
+      }
+    },
+    facebookId: {
+      type: DataTypes.STRING
+    },
+    googleId: {
+      type: DataTypes.STRING
+    },
+    fortyTwoId: {
+      type: DataTypes.STRING
+    },
+    login: {
+      type: DataTypes.STRING
+    },
+    firstname: {
+      type: DataTypes.STRING
+    },
+    name: {
+      type: DataTypes.STRING
+    },
+    image_url: {
+      type: DataTypes.STRING
+    },
+    language: {
+      type: DataTypes.STRING
     }
   })
-
   User.prototype.comparePassword = function (password) {
     return bcrypt.compareAsync(password, this.password)
   }
-
   return User
 }

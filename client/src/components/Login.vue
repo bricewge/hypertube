@@ -8,25 +8,33 @@
           </v-toolbar-title>
         </v-toolbar>
         <div class="pl-4 pr-4 pt-2 pb-2">
-          <v-text-field
-            name="email"
-            label="Email"
-            type="email"
-            v-model="email" light>
-          </v-text-field>
-          <v-text-field
-            name="password"
-            label="Mot de passe"
-            type="password"
-            v-model="password" light>
-          </v-text-field>
-          <v-alert type="success" :value="succes" transition="scale-transition" v-html="succes"/>
-          <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
+          <form
+            name="connexion"
+            autocomplete="off"
+            ><v-text-field
+              name="email"
+              label="Email"
+              type="email"
+              v-model="email" light>
+            </v-text-field>
+            <v-text-field
+              name="password"
+              label="Mot de passe"
+              type="password"
+              v-model="password"
+              autocomplete="new-password" light>
+            </v-text-field>
+          </form>
+          <v-alert type="success" :value="success" icon="new_releases" transition="scale-transition" v-html="success"/>
+          <v-alert type="error" :value="error" icon="warnign" transition="scale-transition" v-html="error"/>
           <br>
           <v-btn
             class="red" dark
             @click="login">
             Se connecter
+          </v-btn>
+          <v-btn to="/auth/facebook" class="blue">
+            facebook
           </v-btn>
         </div>
       </div>
@@ -41,17 +49,19 @@ export default {
       email: '',
       password: '',
       error: null,
-      succes: null
+      success: null
     }
   },
   methods: {
     async login () {
       try {
-        await AuthenticationService.login({
+        const response = await AuthenticationService.login({
           email: this.email,
-          password: this.password,
-          succes: 'ok'
+          password: this.password
         })
+        this.$store.dispatch('setToken', response.data.token)
+        this.$store.dispatch('setUser', response.data.user)
+        this.success = 'Connexion réussie :D'
       } catch (err) {
         this.error = err.response.data.error
       }
@@ -60,9 +70,11 @@ export default {
   watch: {
     email (value) {
       this.error = null
+      this.success = null
     },
     password (value) {
       this.error = null
+      this.success = null
     }
   },
   mounted () {
