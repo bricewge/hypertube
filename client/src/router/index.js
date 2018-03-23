@@ -21,17 +21,17 @@ export default new Router({
       component: Login
     },
     {
-      path: '/movies/:movie_id',
+      path: '/movie',
       name: 'movie',
       component: Movie
     },
     {
-      path: '/users/:id',
+      path: '/user',
       name: 'user',
       component: User
     },
     {
-      path: '/player/:movie_id',
+      path: '/player',
       name: 'play',
       component: Player
     }

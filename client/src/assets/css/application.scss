@@ -1,6 +1,6 @@
 $dark: #191a1c; //rgb(25,26,28);
 $darker: #121214; //rgb(18,18,20);
-$dark-border: #060707; //rgb(6,7,7);
+$black: #060707; //rgb(6,7,7);
 $red: #e82535; //rgb(232, 37, 53);
 $grey-txt: #716e6f; //rgb(113, 110, 111);
 $white: #f3f3f4; //rgb(243,243,244);
@@ -11,25 +11,20 @@ $google-red: #d43335; //rgb(212,51,53);
 
 $font: 'Avenir', Helvetica, Arial, sans-serif;
 
-#app{
-  background: $dark;
-}
-
-header{
+#app {
+  font-family: $font;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background: $dark;
+  margin-top: 60px;
+  background: $darker;
 }
 
-.test{
-  background: red !important;
+input{
+  outline: none;
 }
 
-header img{
-  height: 3.5em;
-}
-
-header img, header .link-cntnr{
-  display: inline;
-  vertical-align: top;
-  border: 1px solid red;
+a{
+  text-decoration: none;
+  outline: none;
 }
