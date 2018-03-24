@@ -1,6 +1,7 @@
-// const net = require('net')
+const {Socket} = require('net')
 const Wire = require('bittorrent-protocol')
 const utMetadata = require('ut_metadata')
+const debug = require('debug')('ft-torrent:peer')
 const utils = require('./utils')
 
 // We activly try to connect to a peer
@@ -20,6 +21,7 @@ exports.createIncomingPeer = function (conn) {
   return peer
 }
 
+// TODO Write retry logic
 class Peer {
   constructor (id, type) {
     this.id = id // ip:port
@@ -36,56 +38,73 @@ class Peer {
     // this.timeout = null
     this.retries = 0 // outgoing TCP connection retry count
     this.sentHandshake = false
+    this.metadataRequested = false // we asked for metadata
   }
 
-  connect (conn) {
+  // Connect to a peer, used on outgoing connections
+  connect () {
+    debug('connect to %o', this.id)
+    this.conn = new Socket()
+    this.conn.connect(this.port, this.address, this.onConnect())
+  }
+
+  onConnect () {
     if (this.destroyed) return
+    debug('onConnect %o', this.id)
     this.connected = true
-    if (!this.conn) this.conn = conn
+    // if (!this.conn) return // TODO inform that we don't have a socket
     this.conn.once('close', () => this.destroy())
     this.conn.once('end', () => this.destroy())
     this.conn.once('error', (err) => this.destroy(err))
-    this.wire = new Wire()
-    this.wire.once('error', (err) => this.destroy(err)) // Not sure if needed since it's pipe with 'conn'
 
-    this.wire.once('handshake', (infoHash, peerId) => this.onHandshake)
-    // TODO Signal that we have metadata we received it
-    // this.wire.use(utMetadata(this.torrent.metadata))
-    this.wire.use(utMetadata())
+    this.wire = new Wire()
+    this.wire.use(utMetadata(this.torrent.metadata))
+    this.wire.once('error', (err) => this.destroy(err))
+    this.wire.once('handshake', (hash, id) => this._onHandshake(hash, id))
+    this.wire.ut_metadata.on('metadata', (raw) => this._onMetadata(raw))
 
     this.conn.pipe(this.wire).pipe(this.conn)
+    if (!this.sentHandshake) this.handshake()
   }
 
   handshake () {
+    debug('handshake to %o', this.id)
     const opts = { dht: true }
     this.wire.handshake(this.torrent.infoHash, this.torrent.peerId, opts)
     this.sentHandshake = true
   }
 
-  onHandshake (infoHash, peerId) {
+  _onHandshake (infoHash, peerId) {
     if (this.destroyed) return
+    debug('handshake from %o', this.id)
     // if (!this.torrent) // TODO Set it! It should only happen when incoming
-    // add the peer to the corrent torrent
-    // if (peerId === this.torrent.peerId) {
-    //   this.destroy(new Error('don\'t connect to yourself'))
-    //   return
-    // }
-
+    if (peerId === this.torrent.peerId) {
+      this.destroy(new Error('don\'t connect to yourself'))
+      return
+    }
     this.tries = 0
-
-    if (!this.handsake) this.handsake()
-    // if (!this.torrent.metadata) // TODO Conditionaly fetch metadata
-    this.wire.ut_metadata.fetch()
+    if (!this.torrent.metadata) {
+      this.wire.ut_metadata.fetch()
+      this.metadataRequested = true
+    }
+    if (!this.sentHandshake) this.handshake()
   }
 
-  destory (err) {
+  _onMetadata (rawMetadata) {
+    debug('metadata from %o', this.id)
+    if (this.torrent.metadata) return
+    this.torrent.metadata = rawMetadata
+  }
+
+  destroy (err) {
     if (this.destroyed) return
+    if (err) debug('destory %o: %s', this.id, err.code)
     this.destroyed = true
-    console.error(err)
+    // TODO ? reset all properties ?
 
     if (this.conn) this.conn.destroy()
     this.conn = null
-    if (this.wire) this.wire.destory()
+    if (this.wire) this.wire.destroy()
     this.wire = null
   }
 }
