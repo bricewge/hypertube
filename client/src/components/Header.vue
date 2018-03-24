@@ -37,11 +37,15 @@ export default{
   header{
     text-align: center;
     background: $dark;
+    border: 2px solid $darker;
     position: fixed;
     display: flex;
     width:100%;
     top:0;
     padding: .2em 2em;
+    -webkit-box-shadow: 0px 16px 24px -3px rgba(18,18,20,1);
+    -moz-box-shadow: 0px 16px 24px -3px rgba(18,18,20,1);
+    box-shadow: 0px 16px 24px -3px rgba(18,18,20,1);
   }
 
   header .link-cntnr div{

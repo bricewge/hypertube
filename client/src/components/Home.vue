@@ -1,41 +1,66 @@
 <template>
   <div class="hello">
-    <h1 dark> -> {{ movies }}</h1>
-    <h2>Essential Links</h2>
-    <h1 dark> -> {{ movies }}</h1>
+    <br><br>
+    <div v-for='movie in movies' v-bind:key='movie' class="movie-cntnr">
+      <img v-bind:src="movie.medium_cover_image"/>
+      <p>{{ movie.title }}</p>
+      <p>{{ movie.year }} - {{ movie.rating }}/10</p>
+    </div>
   </div>
 </template>
 
 <script>
+import HomeService from '@/service/HomeService'
+import axios from 'axios'
+var url = 'https://yts.am/api/v2/list_movies.json?limit=50&sort_by=title'
+
 export default {
-  name: 'HelloWorld',
   data () {
     return {
-      movies: JSON.parse('https://yts.am/api/v2/list_movies.json')
+      movies: []
     }
   },
-  methods: {
-    getMoviesList () {
-      return 'test'
-    }
+  mounted () {
+    var self = this
+    HomeService.getMoviesList(url)
+      .then((response) => {
+        self.movies = response.data.data.movies
+      })
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+<style scoped lang="scss">
+@import '../assets/css/application.scss';
+.movie-cntnr{
   display: inline-block;
-  margin: 0 10px;
+  vertical-align: top;
+  margin: .5em;
+  padding: .5em;
+  width: 16em;
 }
-a {
-  color: #42b983;
+
+.movie-cntnr img{
+  width: 15em;
+  cursor: pointer;
+  border-radius: .5em;
+  height: 22em;
+  -webkit-box-shadow: 0px 0px 17px 7px rgb(6,7,7);
+  -moz-box-shadow: 0px 0px 17px 7px rgb(6,7,7);
+  box-shadow: 0px 0px 17px 7px rgb(6,7,7);
+}
+
+.movie-cntnr p{
+  font-weight: 400;
+  opacity: .8;
+  margin: 0;
+  font-size: 1em;
+}
+
+.movie-cntnr p:first-of-type{
+  opacity: 1;
+  color: $white;
+  font-weight: 600;
+  font-size: 1.2em;
 }
 </style>
