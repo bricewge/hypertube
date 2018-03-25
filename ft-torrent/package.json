@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/bricewge/ft-torrent#readme",
   "dependencies": {
+    "bitfield": "^2.0.0",
     "bittorrent-protocol": "^2.4.0",
     "debug": "^3.1.0",
+    "extend": "^3.0.1",
     "fs-chunk-store": "^1.6.5",
     "mkdirp": "^0.5.1",
     "parse-torrent": "^5.8.3",

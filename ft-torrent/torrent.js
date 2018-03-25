@@ -1,8 +1,11 @@
 const EventEmitter = require('events').EventEmitter
 const net = require('net')
+const path = require('path')
 const mkdirp = require('mkdirp')
 const parseTorrent = require('parse-torrent')
 const Piece = require('torrent-piece')
+const extendMutable = require('xtend/mutable')
+// const Bitfield = require('bitfield')
 const FSChunkStore = require('fs-chunk-store')
 const debug = require('debug')('ft-torrent:torrent')
 const Peer = require('./peer')
@@ -12,21 +15,23 @@ class Torrent extends EventEmitter {
     super()
     this.infoHash = infoHash.toLowerCase()
 
-    this.pieces = null
+    this.pieces = []
+    this._hashes = [] // Hash of thes pieces
     this.peers = {} // All peers
     this.wires = new Set() // Added after handhsakes
     this.peerId = null
-    this.trackers = []
+    // this.trackers = []
     this.metadata = null
+    // this.bitfield = null // send after the handshake to indicate already succecfully downloaded pieces
 
-    this.uploaded = 0 // bytes uploaded to peers
-    this.downloaded = 0 // bytes downloaded from peers
+    // this.uploaded = 0 // bytes uploaded to peers
+    // this.downloaded = 0 // bytes downloaded from peers
     this.progress = false // torrent download progress, from 0 to 1
     this.destroyed = false
 
     this.files = [] // files to download from the torrent
 
-    this.path = `/tmp/ft-torrent/${this.infoHash}`
+    this.path = path.join('/tmp/ft-torrent', this.infoHash)
     mkdirp(this.path, (err) => this.destroy(err))
   }
 
@@ -37,10 +42,28 @@ class Torrent extends EventEmitter {
   // Only accept raw metadata
   set metadata (rawMetadata) {
     if (!rawMetadata) return
-    let parsedTorrent = parseTorrent(rawMetadata)
-    if (this.infoHash !== parsedTorrent.infoHash) return
-    this._metadata = parsedTorrent
+    try {
+      let parsedTorrent = parseTorrent(rawMetadata)
+      if (this.infoHash !== parsedTorrent.infoHash) return
+      this._metadata = parsedTorrent
+    } catch (err) {
+      this._metadata = null
+      return
+    }
     debug('metadata added: %O', this.metadata)
+
+    extendMutable(this, this._metadata)
+    this._hashes = this.pieces
+
+    this.pieces = this.pieces.map(function (hash, i) {
+      let pieceLength = (i === this.pieces.length - 1)
+        ? this.lastPieceLength
+        : this.pieceLength
+      return new Piece(pieceLength)
+    })
+
+    // this.bitfield = new Bitfield(this.pieces.length)
+
     for (let i in this.peers) {
       let peer = this.peers[i]
       if (peer.destroyed) continue
@@ -91,10 +114,10 @@ class Torrent extends EventEmitter {
   _initStore () {
     if (this.metadata.files) return
     let chunks = new FSChunkStore(this.metadata['piece length'], {
-      path: this.path + '/' + this.metadata.name,
+      path: path.join(this.path, this.metadata.name),
       length: this.metadata.length
     })
-    console.log(this.metadata.pieces.length)
+    console.log(chunks)
   }
 
   _test () {
