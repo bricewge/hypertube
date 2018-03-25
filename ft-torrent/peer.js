@@ -58,6 +58,7 @@ class Peer {
     this.conn.once('error', (err) => this.destroy(err))
 
     this.wire = new Wire()
+    this.wire.setKeepAlive(true)
     this.wire.use(utMetadata(this.torrent.metadata))
     this.wire.once('error', (err) => this.destroy(err))
     this.wire.once('handshake', (hash, id) => this._onHandshake(hash, id))
@@ -88,6 +89,7 @@ class Peer {
       this.metadataRequested = true
     }
     if (!this.sentHandshake) this.handshake()
+    this.torrent.wires.add(this.wire)
   }
 
   _onMetadata (rawMetadata) {
@@ -102,8 +104,10 @@ class Peer {
     this.destroyed = true
     // TODO ? reset all properties ?
 
+    if (this.wire && this.torrent) this.torrent.wires.delete(this.wire)
     if (this.conn) this.conn.destroy()
     this.conn = null
+    this.connected = false
     if (this.wire) this.wire.destroy()
     this.wire = null
   }
