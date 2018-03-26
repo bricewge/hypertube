@@ -28,4 +28,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../assets/css/application';
+.usr-cntnr{
+  padding-top: 3em;
+}
+
+.usr-cntnr img{
+  width: 20em;
+  height: 20em;
+  border-radius: 50%;
+}
+
+.usr-cntnr p{
+  margin: .3em;
+  font-weight: 500;
+  font-size: 1.2em;
+  opacity: .8;
+  color: $white;
+}
 </style>

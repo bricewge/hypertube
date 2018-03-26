@@ -17,7 +17,7 @@ $font: 'Avenir', Helvetica, Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   margin-top: 60px;
-  background: $dark;
+  background: $darker;
 }
 
 input{
@@ -27,4 +27,24 @@ input{
 a{
   text-decoration: none;
   outline: none;
+}
+
+button{
+  background-color: $blue;
+  color: $white;
+  font-weight: 500;
+  font-size: 1.2em;
+  padding: .5em 2em;
+  opacity: .8;
+  border-radius: .2em;
+}
+
+button img{
+  width: 1.5em;
+  vertical-align: -.4em;
+  margin-left: 1em;
+}
+
+button:hover{
+  opacity: 1;
 }

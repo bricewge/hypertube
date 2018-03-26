@@ -41,6 +41,7 @@ export default{
     position: fixed;
     display: flex;
     width:100%;
+    z-index: 50;
     top:0;
     padding: .2em 2em;
     -webkit-box-shadow: 0px 16px 24px -3px rgba(18,18,20,1);

@@ -1,6 +1,9 @@
 <template>
   <div class="hello">
     <br><br>
+    <div v-if='loading' class="load">
+      <img src='../assets/spinner.mov.gif'/>
+    </div>
     <div v-for='movie in movies' v-bind:key='movie' class="movie-cntnr">
       <img v-bind:src="movie.medium_cover_image"/>
       <p>{{ movie.title }}</p>
@@ -11,21 +14,20 @@
 
 <script>
 import HomeService from '@/service/HomeService'
-import axios from 'axios'
 var url = 'https://yts.am/api/v2/list_movies.json?limit=50&sort_by=title'
 
 export default {
   data () {
     return {
-      movies: []
+      movies: [],
+      loading: false
     }
   },
-  mounted () {
-    var self = this
-    HomeService.getMoviesList(url)
-      .then((response) => {
-        self.movies = response.data.data.movies
-      })
+  async mounted () {
+    this.loading = true
+    const res = await HomeService.getMoviesList(url)
+    this.loading = false
+    this.movies = res.data.data.movies
   }
 }
 </script>
@@ -62,5 +64,10 @@ export default {
   color: $white;
   font-weight: 600;
   font-size: 1.2em;
+}
+
+.load img{
+  width: 5em;
+  opacity: .5;
 }
 </style>
