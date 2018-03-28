@@ -1,5 +1,6 @@
-const AuthenticationController = require('./controllers/AuthenticationControllers')
+const AuthenticationController = require('./controllers/AuthenticationController')
 const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy')
+const MoviesController = require('./controllers/MoviesController')
 
 module.exports = (app, passport) => {
   app.post('/register',
@@ -28,4 +29,8 @@ module.exports = (app, passport) => {
     function (req, res) {
       res.redirect('/')
     })
+  app.get('/movies',
+    MoviesController.index)
+  app.post('/movies',
+    MoviesController.index)
 }
