@@ -1,5 +1,10 @@
-* hypertube
-** Example
+#+TITLE: hypertube
+* Install
+** Dependencies
+#+BEGIN_SRC sh
+  brew reinstall ffmpeg --with-libvpx --with-opus
+#+END_SRC
+* Example
 Pulp fiction: =http://www.imdb.com/title/tt0110912/=
 
 Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/api][YTS]] 
@@ -10,6 +15,14 @@ Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/a
     curl "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb=${imdbId}&token=${token}"
 #+END_SRC
 
+* Notes
 ** Modules idea
 - https://github.com/mafintosh/torrent-stream
 - https://www.npmjs.com/package/opensubtitles-api
+
+** Video player
+We should =preload= but not =autoplay= =<video />=. And we should only enable the play button on the event =canplaythrough= or if the video attribute =readyState= is true.
+
+To handle subtitles we can use =<track />=.
+
+As a bonus, using the =MediaStream= API seems easy.
