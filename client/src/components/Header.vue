@@ -9,7 +9,7 @@
       <router-link to="/" ><img src="../assets/logo-small.png"/></router-link>
     </div>
     <div class="link-cntnr align-rgt">
-      <div><router-link to="/login">Se Connecter</router-link></div>
+      <div v-if="!$store.state.isUserLoggedIn"><router-link to="/login">Se Connecter</router-link></div>
       <div><router-link to="/movie">Show movie</router-link></div>
       <div><router-link to="/player">Player page</router-link></div>
       <div class="search">
@@ -20,7 +20,10 @@
         <img src="../assets/united-kingdom.png">
         <img src="../assets/france.png" class="selected">
       </div>
-      <div><router-link to="/user"><img src="../assets/logout-button.png"></router-link></div>
+      <div v-if="$store.state.isUserLoggedIn"><v-btn
+        @click="logout"
+        flat
+        dark><router-link to="/user"><img src="../assets/logout-button.png"></router-link></v-btn></div>
     </div>
   </header>
 </template>
@@ -39,7 +42,15 @@
 // About the language preference, do I have to do it in front or is it done in back-end
 // ADD the logout POST endpoint
 export default{
-
+  methods: {
+    logout () {
+      this.$store.dispatch('setToken', null)
+      this.$store.dispatch('setUser', null)
+      this.$router.push({
+        name: 'root'
+      })
+    }
+  }
 }
 </script>
 

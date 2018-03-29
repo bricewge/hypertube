@@ -50,7 +50,7 @@ module.exports = {
       return res.status(200).send({
         user: userJson,
         token: jwtSignUser(userJson),
-        succes: 'OK'
+        success: 'OKlol'
       })
     } catch (err) {
       res.status(500).send({

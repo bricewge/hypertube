@@ -23,7 +23,7 @@
     "mysql": "^2.15.0",
     "mysql2": "^1.5.2",
     "nodemon": "^1.17.1",
-    "sequelize": "^4.35.2",
+    "sequelize": "^4.37.4",
     "vuetify": "^1.0.5"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ node_modules/
 dist/
 npm-debug.log
 yarn-error.log
+/server/src/oauth.js
 
 # Editor directories and files
 .idea
@@ -10,3 +11,5 @@ yarn-error.log
 *.ntvs*
 *.njsproj
 *.sln
+
+.key
