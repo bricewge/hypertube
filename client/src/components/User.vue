@@ -10,6 +10,7 @@
 </template>
 
 <script>
+// GET current user informations or user informations based on his ID
 export default {
   data () {
     return {

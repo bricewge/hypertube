@@ -4,7 +4,7 @@
     <div v-if='loading' class="load">
       <img src='../assets/spinner.mov.gif'/>
     </div>
-    <div v-for='movie in movies' v-bind:key='movie' class="movie-cntnr">
+    <div v-for='movie in movies' :key='movie' class="movie-cntnr">
       <img v-bind:src="movie.medium_cover_image"/>
       <p>{{ movie.title }}</p>
       <p>{{ movie.year }} - {{ movie.rating }}/10</p>
@@ -16,6 +16,16 @@
 import HomeService from '@/service/HomeService'
 var url = 'https://yts.am/api/v2/list_movies.json?limit=50&sort_by=title'
 
+// GOALS :
+// GET random data from BACK-END API, like 30 of each then get the next 30 and show them on scroll down
+// !!!!!! OR get the complete array of movies and show only the first 30 then on scroll down etc.
+// IF user use the search form ->
+// POST value to back-end
+// GET new array of movies
+// LOAD selected movies (no page reload)
+// IF USER use a filter (by title, kind, etc.) ->
+// SORT All results by x and show them
+// ON CLICK ON A MOVIE POST the movie name to the server and prepare to redirect to SHOW movie
 export default {
   data () {
     return {
@@ -25,7 +35,7 @@ export default {
   },
   async mounted () {
     this.loading = true
-    const res = await HomeService.getMoviesList(url)
+    let res = await HomeService.getMoviesList(url)
     this.loading = false
     this.movies = res.data.data.movies
   }

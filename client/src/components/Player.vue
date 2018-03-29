@@ -16,6 +16,33 @@
   </div>
 </template>
 
+<script>
+// GET the path to movie file and subtitles files display it with a video tag
+// also GET all comments linked to this movie
+export default {
+  data () {
+    return {
+      movie: {
+        title: 'Pulp Fiction',
+        movie_path: 'Path to movie'
+      },
+      comments: [
+        {
+          user_name: 'Josiane',
+          content: 'Trop bien !!',
+          created_at: 'Il y a 2 minutes'
+        },
+        {
+          user_name: 'Philippe',
+          content: 'Josiane, les femmes à la vaisselle !!!',
+          created_at: 'Il y a 3M d\'années'
+        }
+      ]
+    }
+  }
+}
+</script>
+
 <style lang='scss' scoped>
 @import '../assets/css/application';
 
@@ -83,28 +110,3 @@ h1{
   box-sizing: border-box;
 }
 </style>
-
-<script>
-export default {
-  data () {
-    return {
-      movie: {
-        title: 'Pulp Fiction',
-        movie_path: 'Path to movie'
-      },
-      comments: [
-        {
-          user_name: 'Josiane',
-          content: 'Trop bien !!',
-          created_at: 'Il y a 2 minutes'
-        },
-        {
-          user_name: 'Philippe',
-          content: 'Josiane, les femmes à la vaisselle !!!',
-          created_at: 'Il y a 3M d\'années'
-        }
-      ]
-    }
-  }
-}
-</script>

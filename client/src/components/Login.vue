@@ -21,12 +21,60 @@
       <br>
       <button @click="login">Se connecter</button><br><br>
       <h2>Ou</h2>
-      <button><img src='../assets/42.png'></button>
-      <button><img src='../assets/facebook-letter-logo.png'></button>
-      <button><img src='../assets/google-plus.png'></button>
+      <router-link to='/auth/42'><button><img src='../assets/42.png'></button></router-link>
+      <router-link to='/auth/facebook'><button><img src='../assets/facebook-letter-logo.png'></button></router-link>
+      <router-link to='/auth/google'><button><img src='../assets/google-plus.png'></button></router-link>
     </div>
   </div>
 </template>
+
+<script>
+// ADD the feature to download images
+// POST form informations on SUBMIT register
+// POST form informations on SUBMIT login
+// add token to user if logged in successfully
+import AuthenticationService from '@/service/AuthenticationService'
+export default {
+  data () {
+    return {
+      email: '',
+      password: '',
+      error: null,
+      success: null
+    }
+  },
+  methods: {
+    async login () {
+      try {
+        const response = await AuthenticationService.login({
+          email: this.email,
+          password: this.password
+        })
+        this.$store.dispatch('setToken', response.data.token)
+        this.$store.dispatch('setUser', response.data.user)
+        this.success = 'Connexion réussie :D'
+      } catch (err) {
+        this.error = err.response.data.error
+      }
+    }
+  },
+  watch: {
+    email (value) {
+      this.error = null
+      this.success = null
+    },
+    password (value) {
+      this.error = null
+      this.success = null
+    }
+  },
+  mounted () {
+    setTimeout(() => {
+      this.email = ''
+    }, 1000)
+  }
+}
+</script>
 
 <style scoped lang='scss'>
 @import '../assets/css/application.scss';
@@ -78,55 +126,15 @@ button img{
   margin: 0;
 }
 
-.lft-cntnr button:nth-of-type(2){
+.lft-cntnr a:first-of-type button{
   background: $white;
 }
 
-.lft-cntnr button:nth-of-type(3){
+.lft-cntnr a:nth-of-type(2) button{
   background: $facebook-blue;
 }
 
-.lft-cntnr button:nth-of-type(4){
+.lft-cntnr a:nth-of-type(3) button{
   background: $google-red;
 }
 </style>
-
-<script>
-import AuthenticationService from '@/service/AuthenticationService'
-export default {
-  data () {
-    return {
-      email: '',
-      password: '',
-      error: null,
-      succes: null
-    }
-  },
-  methods: {
-    async login () {
-      try {
-        await AuthenticationService.login({
-          email: this.email,
-          password: this.password,
-          succes: 'ok'
-        })
-      } catch (err) {
-        this.error = err.response.data.error
-      }
-    }
-  },
-  watch: {
-    email (value) {
-      this.error = null
-    },
-    password (value) {
-      this.error = null
-    }
-  },
-  mounted () {
-    setTimeout(() => {
-      this.email = ''
-    }, 1000)
-  }
-}
-</script>

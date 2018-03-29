@@ -26,6 +26,18 @@
 </template>
 
 <script>
+// OBJECTIVES OF THE DAY:
+// - Add cde-laro's work & make it work
+// - Deal with the signin/signout feature
+// - Deal with the select language feature
+// - Deal with the authentication forms
+
+// IF I'm on the home page, do I let the search bar ?
+// if signed_in? this header, otherwise another header
+// FIND OUT how to know if user is signed in
+// ADD A FORM to select the current language
+// About the language preference, do I have to do it in front or is it done in back-end
+// ADD the logout POST endpoint
 export default{
 
 }

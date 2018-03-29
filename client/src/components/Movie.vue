@@ -21,6 +21,27 @@
   </div>
 </template>
 
+<script>
+// GET Data from the selected movie and add a link to the movie player
+export default {
+  data () {
+    return {
+      movie: {
+        image_url: 'https://cdn.amctheatres.com/production/2/movies/49000/48956/PosterDynamic/34928.jpg',
+        title: 'Jumanji: Welcome to the jungle',
+        year: '2017',
+        duration: '119',
+        type: 'family/action/aventure',
+        synopsis: 'the tables are turned as four teenagers are sucked into Jumanji\'s world - pitted against rhinos, black mambas and an endless variety of jungle traps and puzzles. To survive, they\'ll play as characters of the game.',
+        productor: 'Bwaegene',
+        realisator: 'cde-laro',
+        actors: 'vmontagn, tgauguet'
+      }
+    }
+  }
+}
+</script>
+
 <style lang="scss" scoped>
 @import '../assets/css/application';
 
@@ -88,23 +109,3 @@ button{
   margin-top: 5em;
 }
 </style>
-
-<script>
-export default {
-  data () {
-    return {
-      movie: {
-        image_url: 'https://cdn.amctheatres.com/production/2/movies/49000/48956/PosterDynamic/34928.jpg',
-        title: 'Jumanji: Welcome to the jungle',
-        year: '2017',
-        duration: '119',
-        type: 'family/action/aventure',
-        synopsis: 'the tables are turned as four teenagers are sucked into Jumanji\'s world - pitted against rhinos, black mambas and an endless variety of jungle traps and puzzles. To survive, they\'ll play as characters of the game.',
-        productor: 'Bwaegene',
-        realisator: 'cde-laro',
-        actors: 'vmontagn, tgauguet'
-      }
-    }
-  }
-}
-</script>
