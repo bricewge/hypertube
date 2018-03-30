@@ -1,0 +1,22 @@
+{
+  "kind": "kind",
+  "sort": "sort by",
+  "search": "Search",
+  "register": "Register",
+  "email": "Email",
+  "name": "Name",
+  "firstname": "Firstname",
+  "login": "Login",
+  "password": "Password",
+  "download_image": "Download Image",
+  "register-btn": "Register",
+  "signin": "Signin",
+  "login-btn": "Signin",
+  "or": "Or",
+  "productor": "Productor",
+  "realisator": "Realisator",
+  "with": "With",
+  "your-comment": "Your comment...",
+  "ago": "ago",
+  "il-y-a": " "
+}

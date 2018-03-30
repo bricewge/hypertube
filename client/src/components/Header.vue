@@ -2,44 +2,37 @@
   <header>
     <div class="link-cntnr align-lft">
       <div><router-link to="/user"><img src="../assets/man-user.png"> </router-link></div>
-      <div class="sort">Genre <img src="../assets/sort-down.png"/></div>
-      <div class="sort">Trier par <img src="../assets/sort-down.png"/></div>
+      <div class="sort">{{ $t("kind") }} <img src="../assets/sort-down.png"/></div>
+      <div class="sort">{{ $t("sort") }}<img src="../assets/sort-down.png"/></div>
     </div>
     <div>
       <router-link to="/" ><img src="../assets/logo-small.png"/></router-link>
     </div>
     <div class="link-cntnr align-rgt">
-      <div v-if="!$store.state.isUserLoggedIn"><router-link to="/login">Se Connecter</router-link></div>
-      <div><router-link to="/movie">Show movie</router-link></div>
-      <div><router-link to="/player">Player page</router-link></div>
+      <!-- THESE LINKS WILL BE REMOVED -->
+        <div v-if="!$store.state.isUserLoggedIn"><router-link to="/login">Se Connecter</router-link></div>
+        <div><router-link to="/movie">Show movie</router-link></div>
+        <div><router-link to="/player">Player page</router-link></div>
+      <!-- END -->
       <div class="search">
         <img src="../assets/magnifying-glass.png"/>
-        <input type="text" placeholder="Rechercher">
+        <input type="text" :placeholder="$t('search')">
       </div>
       <div class="lang">
-        <img src="../assets/united-kingdom.png">
-        <img src="../assets/france.png" class="selected">
+        <img src="../assets/smurf.png" @click="setLang('st')" />
+        <img src="../assets/china.png" @click="setLang('cn')" />
+        <img src="../assets/united-kingdom.png" @click="setLang('en')" />
+        <img src="../assets/france.png" @click="setLang('fr')" />
       </div>
-      <div v-if="$store.state.isUserLoggedIn"><v-btn
-        @click="logout"
-        flat
-        dark><router-link to="/user"><img src="../assets/logout-button.png"></router-link></v-btn></div>
+      <div v-if="$store.state.isUserLoggedIn"><router-link to="/user"><img @click="logout" src="../assets/logout-button.png"></router-link></div>
     </div>
   </header>
 </template>
 
 <script>
-// OBJECTIVES OF THE DAY:
-// - Add cde-laro's work & make it work
-// - Deal with the signin/signout feature
-// - Deal with the select language feature
-// - Deal with the authentication forms
-
-// IF I'm on the home page, do I let the search bar ?
 // if signed_in? this header, otherwise another header
 // FIND OUT how to know if user is signed in
 // ADD A FORM to select the current language
-// About the language preference, do I have to do it in front or is it done in back-end
 // ADD the logout POST endpoint
 export default{
   methods: {
@@ -49,6 +42,9 @@ export default{
       this.$router.push({
         name: 'root'
       })
+    },
+    setLang (lang) {
+      this.$store.dispatch('setLang', lang)
     }
   }
 }
@@ -126,10 +122,12 @@ export default{
 
   header div .lang img{
     width: 2.3em;
-    margin-top: -.2em;
+    border-radius: .2em;
+    margin-top: .1em;
     height: auto;
     opacity: .5;
     margin-left: .2em;
+    cursor: pointer;
   }
 
   header div .lang .selected{

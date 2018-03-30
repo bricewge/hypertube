@@ -6,9 +6,9 @@
         <iframe src="https://www.youtube.com/embed/yH4J2N3cUrw?rel=0;showinfo=0" frameborder="0" allowfullscreen=""></iframe>
       </div>
       <div class="comment-cntnr">
-        <input type="text" name="comment" placeholder="Votre commentaire...">
+        <input type="text" name="comment" :placeholder="$t('your-comment')">
         <div v-for='comment in comments' v-bind:key='comment' class="comment">
-          <p>{{ comment.user_name }} - {{ comment.created_at }}</p>
+          <p>{{ comment.user_name }} - {{ $t('il-y-a') }} {{ comment.created_at }} {{ $t('ago') }}</p>
           <p>{{ comment.content }}</p>
         </div>
       </div>
@@ -30,12 +30,12 @@ export default {
         {
           user_name: 'Josiane',
           content: 'Trop bien !!',
-          created_at: 'Il y a 2 minutes'
+          created_at: '2 minutes'
         },
         {
           user_name: 'Philippe',
           content: 'Josiane, les femmes à la vaisselle !!!',
-          created_at: 'Il y a 3M d\'années'
+          created_at: '3M d\'années'
         }
       ]
     }

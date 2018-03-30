@@ -10,10 +10,10 @@
           <h1>{{ movie.title }}</h1>
           <p class="description">{{ movie.year }} - {{ movie.duration }} min - {{ movie.type }}</p>
           <p class="synopsis">{{ movie.synopsis }}</p>
-          <p>producteur: {{ movie.productor }}</p>
-          <p>réalisateur: {{ movie.realisator }}</p>
+          <p>{{ $t('productor') }}: {{ movie.productor }}</p>
+          <p>{{ $t('realisator') }}: {{ movie.realisator }}</p>
           <br>
-          <p>avec: {{ movie.actors }}</p>
+          <p>{{ $t('with') }}: {{ movie.actors }}</p>
           <button>Regarder maintenant <img src="../assets/video-camera-with-play-button.png"/></button>
         </div>
       </div>

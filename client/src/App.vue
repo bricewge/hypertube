@@ -2,6 +2,7 @@
   <div id="app">
     <v-app dark>
       <page-header/>
+      <br>
       <main>
         <v-container fluid>
           <router-view/>
@@ -13,6 +14,7 @@
 
 <script>
 import PageHeader from '@/components/Header.vue'
+
 export default {
   name: 'app',
   components: {
