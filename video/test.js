@@ -2,6 +2,9 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const express = require('express')
 const path = require('path')
+const fs = require('fs')
+// const {PassThrough} = require('stream')
+const touch = require('touch')
 
 const app = express()
 // const hash = '3F8F219568B8B229581DDDD7BC5A5E889E906A9B'
@@ -38,14 +41,15 @@ exports.get = function (req, res, next) {
       next()
     } else {
       console.log('We will initiate a download in a short while')
-      const engine = torrentStream(infoHash, {tmp: torrentsPath})
+      const engine = torrentStream(infoHash,
+                                   {path: path.join(torrentsPath, infoHash)})
       engine.once('ready', () => onEngineReady(engine, res, next))
       engine.once('idle', () => onEngineIdle(infoHash))
     }
   } catch (err) { next(err) }
 }
 
-exports.send = function (req, res, next) {
+exports.send = async function (req, res, next) {
   const range = req.headers.range
   let head
   let start = 0
@@ -73,18 +77,40 @@ exports.send = function (req, res, next) {
   // }
 
   head = {
-    'Content-Length': res.file.length,
+    // 'Content-Length': res.file.length,
     'Content-Type': `video/${res.file.type}`
   }
-  res.writeHead(200, head)
+  res.head = head
 
   // transcode(stream, res)// .pipe(res, { end: true })
   // stream.pipe(res)
   if (res.file.transcoded) {
-    // TODO this should be transcoded
-    const stream = res.file.createReadStream()
-    transcode(stream).pipe(res, { end: true })
+    if (!res.file.transcodePath) {
+      const stream = res.file.createReadStream()
+      res.file.transcodePath = path.join(res.file.engine.path,
+                                         res.file.path.name + '.mp4')
+      await touch(res.file.transcodePath)
+      // head['Content-Length'] = 0
+      // res.writeHead(200, head)
+      transcode(stream, res.file.transcodePath, res)
+        .on('progress', function respond (progress) {
+          if (progress.frames < 24 * 10) return
+          // res.head['Content-Length'] = fs.statSync(res.file.transcodePath).size
+          res.writeHead(200, res.head)
+          fs.createReadStream(res.file.transcodePath).pipe(res)
+          this.removeListener('progress', respond)
+          console.log('Response sent')
+        })
+    } else {
+      // head['Content-Length'] = fs.statSync(res.file.transcodePath).size
+      res.writeHead(200, head)
+      fs.createReadStream(res.file.transcodePath).pipe(res)
+    }
+    // console.log(typeof res.file.transcodePath)
+    // console.log(result)
+    // }
   } else {
+    res.writeHead(200, head)
     const stream = res.file.createReadStream({start, end})
     stream.pipe(res)
   }
@@ -102,7 +128,8 @@ app.get('/stream/:hash',
 function onEngineReady (engine, res, next) {
   for (let i in engine.files) {
     let file = engine.files[i]
-    file.type = path.extname(file.name).toLowerCase().substr(1)
+    file.path = path.parse(file.name)
+    file.type = file.path.ext.toLowerCase().substr(1)
     if (nativeFormats.includes(file.type)) file.transcoded = false
     else if (transcodeFormats.includes(file.type)) {
       file.transcoded = true
@@ -133,20 +160,20 @@ function onEngineIdle (infoHash) {
   15 * day) // NOTE Over 23 days it overflow
 }
 
-function transcode (stream) {
-  // TODO Save transcode: .save()
-  return ffmpeg(stream)
-    .format('mp4')
-    .videoCodec('libx264')
-    .audioCodec('libmp3lame')
-    .outputOption('-movflags frag_keyframe+faststart')
-    .on('progress', (progress) => {
-      console.log('Processing: ' + progress)
-    })
-    .on('end', () => {
-      console.log('file has been converted succesfully')
-    })
-    .on('error', (err, stdout, stderr) => {
-      console.log('an error happened: ' + err.message, stdout, stderr)
-    })
+function transcode (streamIn, file, res) {
+  try {
+    return ffmpeg(streamIn)
+      .format('mp4')
+      .videoCodec('libx264')
+      .audioCodec('libmp3lame')
+      .outputOption('-movflags frag_keyframe+faststart')
+      .save(file)
+      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+      .on('end', () => {
+        console.log('file has been converted succesfully')
+      })
+      .on('error', (err, stdout, stderr) => {
+        console.log('an error happened: ' + err.message, stdout, stderr)
+      })
+  } catch (err) { console.log(err) }
 }
