@@ -6,7 +6,7 @@ module.exports = {
       const users = await User.findAll({
         limit: 100
       })
-      res.send(users)
+      res.status(200).send(users)
     } catch (err) {
       res.status(500).send({
         error: 'An error occured trying to fetch the users'
@@ -16,7 +16,7 @@ module.exports = {
   async show (req, res) {
     try {
       const users = await User.findById(req.params.userId)
-      res.send(users)
+      res.status(200).send(users)
     } catch (err) {
       res.status(500).send({
         error: 'An error occured trying to fetch the user'
@@ -26,7 +26,7 @@ module.exports = {
   async post (req, res) {
     try {
       const user = await User.create(req.body)
-      res.send(user)
+      res.status(201).send(user)
     } catch (err) {
       res.status(500).send({
         error: 'An error has occured trying to create the user'

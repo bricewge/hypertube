@@ -1,6 +1,6 @@
 const {User} = require('../models')
-const jwt = require('jsonwebtoken')
-const config = require('../config/config')
+//  const jwt = require('jsonwebtoken')
+//  const config = require('../config/config')
 const pass = require('../oauth.js')
 
 /* function jwtSignUser (user) {

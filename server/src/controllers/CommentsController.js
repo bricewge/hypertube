@@ -6,7 +6,7 @@ module.exports = {
       const comments = await Comment.findAll({
         limit: 100
       })
-      res.send(comments)
+      res.status(200).send(comments)
     } catch (err) {
       res.status(500).send({
         error: 'An error occured trying to fetch the comments'
@@ -15,8 +15,8 @@ module.exports = {
   },
   async show (req, res) {
     try {
-      const comments = await Comment.findById(req.params.commentId)
-      res.send(comments)
+      const comments = await Comment.findAll({where: {movie_id: req.params.movieId}})
+      res.status(200).send(comments)
     } catch (err) {
       res.status(500).send({
         error: 'An error occured trying to fetch the comment'
@@ -28,7 +28,7 @@ module.exports = {
       const comment = await Comment.create(req.body)
       res.send(comment)
     } catch (err) {
-      res.status(500).send({
+      res.status(201).send({
         error: 'An error has occured trying to create the comment'
       })
     }
