@@ -1,0 +1,50 @@
+$dark: #191a1c; //rgb(25,26,28);
+$darker: #121214; //rgb(18,18,20);
+$black: #060707; //rgb(6,7,7);
+$red: #e82535; //rgb(232, 37, 53);
+$grey-txt: #716e6f; //rgb(113, 110, 111);
+$white: #f3f3f4; //rgb(243,243,244);
+$darker-grey-txt: #494949; //rgb(73,73,73);
+$blue: #2c3b6c; //rgb(44,59,108);
+$facebook-blue: #3d5c98; //rgb(61,92,152);
+$google-red: #d43335; //rgb(212,51,53);
+
+$font: 'Avenir', Helvetica, Arial, sans-serif;
+
+#app {
+  font-family: $font;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  margin-top: 60px;
+  background: $darker;
+}
+
+input{
+  outline: none;
+}
+
+a{
+  text-decoration: none;
+  outline: none;
+}
+
+button{
+  background-color: $blue;
+  color: $white;
+  font-weight: 500;
+  font-size: 1.2em;
+  padding: .5em 2em;
+  opacity: .8;
+  border-radius: .2em;
+}
+
+button img{
+  width: 1.5em;
+  vertical-align: -.4em;
+  margin-left: 1em;
+}
+
+button:hover{
+  opacity: 1;
+}

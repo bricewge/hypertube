@@ -1,0 +1,22 @@
+{
+  "kind": "样",
+  "sort": "排序",
+  "search": "搜索",
+  "register": "注册",
+  "email": "电子邮件",
+  "name": "名",
+  "firstname": "名字",
+  "login": "注册",
+  "password": "密码",
+  "download_image": "上传图片",
+  "register-btn": "我注册",
+  "signin": "连接",
+  "login-btn": "我连接",
+  "or": "黄金",
+  "productor": "制片人",
+  "realisator": "导演",
+  "with": "同",
+  "your-comment": "你的评论...",
+  "ago": " 前",
+  "il-y-a": " "
+}

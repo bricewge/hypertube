@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import Register from '@/components/Register'
+import Home from '@/components/Home'
 import Login from '@/components/Login'
+import Movie from '@/components/Movie'
+import User from '@/components/User'
+import Player from '@/components/Player'
 
 Vue.use(Router)
 
@@ -11,17 +13,27 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: HelloWorld
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register
+      component: Home
     },
     {
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/movie',
+      name: 'movie',
+      component: Movie
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: User
+    },
+    {
+      path: '/player',
+      name: 'play',
+      component: Player
     }
   ]
 })

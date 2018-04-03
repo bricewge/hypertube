@@ -2,6 +2,7 @@
   <div id="app">
     <v-app dark>
       <page-header/>
+      <br>
       <main>
         <v-container fluid>
           <router-view/>
@@ -13,6 +14,7 @@
 
 <script>
 import PageHeader from '@/components/Header.vue'
+
 export default {
   name: 'app',
   components: {
@@ -21,13 +23,6 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang='scss'>
+@import '/assets/css/application.scss';
 </style>

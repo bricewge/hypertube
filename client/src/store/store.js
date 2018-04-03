@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { app } from '../main'
+import * as types from './mutation-types'
 
 Vue.use(Vuex)
 
@@ -8,6 +10,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
+    lang: 'fr',
     isUserLoggedIn: false
   },
   mutations: {
@@ -21,9 +24,15 @@ export default new Vuex.Store({
     },
     setUser (state, user) {
       state.user = user
+    },
+    [types.SET_LANG] (state, payload) {
+      app.$i18n.locale = payload
     }
   },
   actions: {
+    setLang ({commit}, payload) {
+      commit(types.SET_LANG, payload)
+    },
     setToken ({commit}, token) {
       commit('setToken', token)
     },

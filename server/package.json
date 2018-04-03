@@ -19,10 +19,12 @@
     "express": "^4.16.2",
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
+    "lint": "^1.1.2",
     "morgan": "^1.9.0",
     "mysql": "^2.15.0",
     "mysql2": "^1.5.2",
     "nodemon": "^1.17.1",
+    "oauth": "^0.9.15",
     "sequelize": "^4.37.4",
     "vuetify": "^1.0.5"
   },

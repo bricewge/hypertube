@@ -1,0 +1,22 @@
+{
+  "kind": "genre",
+  "sort": "trier par",
+  "search": "Rechercher",
+  "register": "Inscription",
+  "email": "Email",
+  "name": "Nom",
+  "firstname": "Prénom",
+  "login": "Login",
+  "password": "Mot de passe",
+  "download_image": "Télécharger une image",
+  "register-btn": "Je m'inscris",
+  "signin": "Connexion",
+  "login-btn": "Je me connecte",
+  "or": "Ou",
+  "productor": "Producteur",
+  "realisator": "Réalisateur",
+  "with": "Avec",
+  "your-comment": "Votre commentaire...",
+  "ago": " ",
+  "il-y-a": "il y a "
+}
