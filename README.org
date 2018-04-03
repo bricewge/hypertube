@@ -1,4 +1,22 @@
 * hypertube
+** Usage
+*** Dependencies
+- =mysql=
+- =git-crypt=
+
+*** Initialization
+#+BEGIN_SRC sh
+  git-crypt unlock KEYFILE
+  npm --prefix client install
+  npm --prefix server install
+  npm --prefix server run init=
+#+END_SRC
+
+*** Run
+#+BEGIN_SRC sh
+  npm --prefix server start &
+  npm --prefix client start &
+#+END_SRC
 ** Example
 Pulp fiction: =http://www.imdb.com/title/tt0110912/=
 

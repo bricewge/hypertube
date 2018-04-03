@@ -44,8 +44,8 @@ passports.passport.use(new passports.FacebookStrategy(pass.facebook,
 require('./routes')(app, passports.passport)
 sequelize.sync()
   .then(() => {
-    app.listen(config.port)
-    console.log(`Serveur started on port ${config.port}`)
+    app.listen(config.server.port)
+    console.log(`Serveur started on port ${config.server.port}`)
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err)
