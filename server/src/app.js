@@ -3,51 +3,45 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
 const {sequelize} = require('./models')
-const config = require('./config/config')
+const {User} = require('./models')
+const pass = require('./oauth.js')
 
+const config = require('./config/config')
 const app = express()
+const passports = {
+  passport: require('passport'),
+  FacebookStrategy: require('passport-facebook').Strategy,
+  GoogleStrategy: require('passport-google-oauth').OAuth2Strategy,
+  FortyTwoStrategy: require('passport-42').Strategy
+}
 app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
-require('./routes')(app)
-
-var FacebookStrategy = require('passport-facebook').Strategy;
-var config = require('./oauth.js');
-
-passport.use('facebook', new FacebookStrategy({
-      clientID        : config.facebook.clientID,
-      clientSecret    : config.facebook.clientSecret,
-      callbackURL     : config.facebook.callbackURL,
-      profileFields: ['id', 'emails', 'name']
-    },
-
-    function(access_token, refresh_token, profile, done) {
-      process.nextTick(function() {
-        Account.findOne({ 'username' : profile.emails[0].value }, function(err, user) {
-          if (err)
-            return done(err);
-          if (user) {
-            if (err)
-              return done(err);
-            else
-              return done(null, user);
-          } else {
-            if (err)
-              return done(err);
-
-            Account.register(new Account({ username : profile.emails[0].value }), profile.id, function(err, account) {
-              if (err)
-                return done(err);
-              else
-                return done(null, account);
-            });
-          }
-        });
-      });
+passports.passport.use(new passports.FacebookStrategy(pass.facebook,
+  (accessToken, refreshToken, profile, cb) => {
+    console.log(accessToken, refreshToken, profile)
+    var obj = { where: {facebookId: profile.id},
+      defaults: {
+        email: profile.emails[0].value,
+        login: profile.username || profile.displayName,
+        firstname: profile.givenName,
+        name: profile.familyName,
+        image_url: profile.picture
+      }
     }
-));
+    User.findOrCreate(obj).then(function (user, err) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(user)
+      }
+    })
+  }
+))
 
+// require('./controllers/ExternAuthenticationController.js')(passports)
+require('./routes')(app, passports.passport)
 sequelize.sync()
   .then(() => {
     app.listen(config.port)
