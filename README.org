@@ -1,5 +1,26 @@
-* hypertube
-** Example
+#+TITLE: hypertube
+** Usage
+*** Dependencies
+- =mysql=
+- =git-crypt=
+- =ffmpeg=
+
+*** Initialization
+#+BEGIN_SRC sh
+  git-crypt unlock KEYFILE
+  npm --prefix client install
+  npm --prefix server install
+  npm --prefix server run init
+#+END_SRC
+
+*** Run
+#+BEGIN_SRC sh
+  npm --prefix server start &
+  npm --prefix client start &
+#+END_SRC
+
+* Examples
+** API
 Pulp fiction: =http://www.imdb.com/title/tt0110912/=
 
 Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/api][YTS]] 
@@ -10,15 +31,7 @@ Sources: [[https://torrentapi.org/apidocs_v2.txt][rarbg]] and [[https://yts.am/a
     curl "https://torrentapi.org/pubapi_v2.php?mode=search&search_imdb=${imdbId}&token=${token}"
 #+END_SRC
 
+* Notes
 ** Modules idea
 - https://github.com/mafintosh/torrent-stream
 - https://www.npmjs.com/package/opensubtitles-api
-
-* API
-** DRAFT
-- =/auth=: [[https://github.com/websanova/vue-auth/blob/master/docs/Options.md][vue-auth]]
-- =/users=: GET
-- =/movies=: GET, POST
-- =/subtitles=: GET
-- =/comments=: GET, POST
-- =/views=: POST, GET
