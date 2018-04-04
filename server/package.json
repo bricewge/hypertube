@@ -1,14 +1,16 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A web app for the 21th century which stream movies from torrents",
+  "author": "tgauguet bwaegene vmontagn and cde-laro",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/nodemon/bin/nodemon.js src/app.js --exec 'npm run lint && node'",
-    "lint": "./node_modules/.bin/eslint **/*.js"
+    "lint": "./node_modules/.bin/eslint **/*.js",
+    "init": "./node_modules/.bin/sequelize db:create --config src/config/db.js"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -25,8 +27,12 @@
     "mysql2": "^1.5.2",
     "nodemon": "^1.17.1",
     "oauth": "^0.9.15",
+    "passport": "^0.4.0",
+    "passport-42": "^1.2.4",
+    "passport-facebook": "^2.1.1",
+    "passport-google-oauth": "^1.0.0",
     "sequelize": "^4.37.4",
-    "vuetify": "^1.0.5"
+    "sequelize-cli": "^4.0.0"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
