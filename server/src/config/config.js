@@ -5,9 +5,7 @@ module.exports = {
   authentication: {
     jwtSecret: process.env.JWT_SECRET || 'secret'
   },
-  torrent: {
-    path: process.env.TORRENT_PATH || path.join('/goinfre/', process.env.USER)
-  },
+  storage: process.env.STORAGE || path.join('/goinfre/', process.env.USER),
   formats: {
     native: ['webm', 'mp4'],
     transcode: ['mkv', 'avi']

@@ -39,7 +39,7 @@ module.exports = {
         let magnetLink = hashes[0]
         const engine = torrentStream(
           magnetLink,
-          {tmp: config.torrent.path}
+          {tmp: config.storage}
         )
         engine.once('ready', () => onEngineReady(engine, res))
         engine.once('idle', () => onEngineIdle(engine))
@@ -58,9 +58,10 @@ function onEngineReady (engine, res) {
   debug(`start downloading: ${engine.infoHash}`)
   for (let i in engine.files) {
     let file = engine.files[i]
+      console.log(file.name)
     file.path = path.parse(file.name)
     file.type = file.path.ext.toLowerCase().substr(1)
-    if (config.format.native.includes(file.type)) file.transcoded = false
+    if (config.formats.native.includes(file.type)) file.transcoded = false
     else if (config.formats.transcode.includes(file.type)) {
       file.transcoded = true
       file.type = 'mp4'
@@ -68,9 +69,17 @@ function onEngineReady (engine, res) {
     // We don't want to stream a trailer instead of the movie
     if (!res.file || file.length > res.file.length) res.file = file
   }
+    // TODO Handle if no movies are found
   // res.file.engine = engine
   res.file.select()
   debug(`selected file ${res.file.name} for ${engine.infoHash}`)
+    res.file.path.full = path.join(config.storage, engine.infoHash + '.m3u8')
+    let stream = res.file.createReadStream()
+    transcode(stream, res.file.path.full)
+    setTimeout(() => {
+        res.status(200).send({url: '/stream/' + engine.infoHash + '.m3u8'})
+    },
+    10 * 1000) // 10 sec
   // next()
   // TODO transcode
   // TODO Mybe wait for transcode to output the first file
