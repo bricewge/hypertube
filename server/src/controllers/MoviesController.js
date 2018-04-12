@@ -77,7 +77,7 @@ function onEngineReady (engine, res) {
     let stream = res.file.createReadStream()
     transcode(stream, res.file.path.full)
     setTimeout(() => {
-        res.status(200).send({url: '/stream/' + engine.infoHash + '.m3u8'})
+        res.status(200).send({url: '/streams/' + engine.infoHash + '.m3u8'})
     },
     10 * 1000) // 10 sec
   // next()
@@ -100,7 +100,7 @@ function transcode (streamIn, file, res) {
     '-start_number 0', // start the first .ts segment at index 0
     '-hls_time 10', // 10 second segment duration
     '-hls_list_size 0', // Maxmimum number of playlist entries (0 means all entries/infinite)
-    '-hls_playlist_type event',
+    '-hls_playlist_type vod',
     // '-hls_flags single_file',
     '-preset ultrafast'
   ]
@@ -108,7 +108,7 @@ function transcode (streamIn, file, res) {
     return ffmpeg(streamIn).addOptions(opts)
       .format('hls')
       .videoCodec('libx264')
-      .audioCodec('libmp3lame')
+      .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
       .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })

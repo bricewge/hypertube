@@ -56,17 +56,20 @@ export default {
       playerOptions: {
         // videojs and plugin options
         height: '360',
-        language: 'en',
+        // language: 'en',
+        muted: false,
         sources: [ {
           withCredentials: false,
           type: 'application/x-mpegURL',
-          src: 'https://logos-channel.scaleengine.net/logos-channel/live/biblescreen-ad-free/playlist.m3u8'
+          // src: 'https://logos-channel.scaleengine.net/logos-channel/live/biblescreen-ad-free/playlist.m3u8'
+          src: 'http://localhost:8081/streams/88594aaacbde40ef3e2510c47374ec0aa396c08e.m3u8'
           // src: 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'
         } ],
-        controlBar: {
-          timeDivider: false,
-          durationDisplay: false
-        },
+        controls: true,
+        // controlBar: {
+        //   timeDivider: false,
+        //   durationDisplay: false
+        // },
         poster: 'https://surmon-china.github.io/vue-quill-editor/static/images/surmon-5.jpg'
       }
     }
