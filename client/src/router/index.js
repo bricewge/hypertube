@@ -14,27 +14,32 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      meta: {auth: true}
     },
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: {auth: false}
     },
     {
       path: '/movie',
       name: 'movie',
-      component: Movie
+      component: Movie,
+      meta: {auth: true}
     },
     {
       path: '/user',
       name: 'user',
-      component: User
+      component: User,
+      meta: {auth: true}
     },
     {
       path: '/player',
       name: 'play',
-      component: Player
+      component: Player,
+      meta: {auth: true}
     }
   ]
 })
