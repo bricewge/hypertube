@@ -1,77 +1,106 @@
 <template>
-  <v-layout column>
-    <v-flex xs6 offset-xs3>
-      <div class="white elevation-2">
-        <v-toolbar flat dense class="red" dark>
-          <v-toolbar-title>
-            Inscription
-          </v-toolbar-title>
-        </v-toolbar>
-        <div class="pl-4 pr-4 pt-2 pb-2">
-          <v-text-field
-            name="email"
-            label="Email"
-            type="email"
-            v-model="email" light>
-          </v-text-field>
-          <v-text-field
-            name="password"
-            label="Mot de passe"
-            type="password"
-            v-model="password" light>
-          </v-text-field>
-          <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
-          <br>
-          <v-btn
-            class="red" dark
-            @click="register">
-            S'inscrire
-          </v-btn>
-        </div>
-      </div>
-    </v-flex>
-  </v-layout>
+<!-- <div class="rgt-cntnr"> -->
+<v-form class="rgt-cntnr"
+        v-model="valid"
+        ref="form"
+        @submit.prevent="register"
+        lazy-validation>
+  <h2>{{ $t('register') }}</h2>
+  <input name="email"
+         type="email"
+         v-model="email"
+         v-validate="'required|email'"
+         :placeholder="$t('email')"/>
+  <input type="text"
+         name="name"
+         v-model="name"
+         v-validate="'required|alpha'"
+         :placeholder="$t('name')"/>
+  <input type="text"
+         name="firstname"
+         v-model="firstname"
+         :placeholder="$t('firstname')"/>
+  <input type="text"
+         name="login"
+         v-model="login"
+         :placeholder="$t('login')"/>
+  <input name="password"
+         label="Mot de passe"
+         type="password"
+         v-model="password"
+         :placeholder="$t('password')"/>
+  <input type="text"
+         name="image"
+         :placeholder="$t('download_image')"/>
+  <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
+  <span v-show="errors.any()">{{ errors.all() }}</span>
+  <br>
+  <button @click="register">{{ $t('register-btn') }}</button><br><br>
+<!-- </div> -->
+</v-form>
 </template>
+
 <script>
 import AuthenticationService from '@/service/AuthenticationService'
+// import validation from '@/util/validation'
+import {validPassword, nonEmptyPassword, validEmail} from '@/util/validation'
+
 export default {
   data () {
     return {
       email: '',
+      firstname: '',
+      name: '',
+      login: '',
       password: '',
-      error: null
+      image: '', // TODO Manage thoses fucking images!!!
+      error: null,
+      valid: false
     }
   },
+
   methods: {
     async register () {
+      // this.samePasswords()
+      if (! await this.$validator.validateAll()) return
+      console.log(this)
       try {
-        const response = await AuthenticationService.register({
+        const data = {
+          login: this.login,
           email: this.email,
+          firstName: this.firstName,
+          lastName: this.lastName,
           password: this.password
+        }
+        const response = await this.$auth.register({
+          data: data,
+          error: function (err) { }
         })
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
+        // this.alert.visible = false
       } catch (err) {
         this.error = err.response.data.error
+        // this.alert.type = 'error'
+        // this.alert.message = err.response.data.message
+        // this.alert.visible = true
       }
-    }
-  },
-  watch: {
-    email (value) {
-      this.error = null
     },
-    password (value) {
-      this.error = null
-    }
-  },
-  mounted () {
-    setTimeout(() => {
-      this.email = ''
-    }, 1000)
+    // async register () {
+    //   try {
+    //     const response = await AuthenticationService.register({
+    //       email: this.email,
+    //       password: this.password
+    //     })
+    //     this.$store.dispatch('setToken', response.data.token)
+    //     this.$store.dispatch('setUser', response.data.user)
+    //   } catch (err) {
+    //     this.error = err.response.data.error
+    //   }
+    // }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang='scss'>
+@import '../assets/css/login.scss';
 </style>

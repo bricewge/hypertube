@@ -1,0 +1,60 @@
+@import './application.scss';
+
+.main-cntnr{
+  padding-top: 5em;
+}
+
+.main-cntnr .rgt-cntnr, .main-cntnr .lft-cntnr{
+  display: inline-block;
+  vertical-align: top;
+  padding: 3em;
+  margin: 0 1em;
+  border-radius: .3em;
+  text-align: center;
+  background: $dark;
+  width: 30em;
+}
+
+h2{
+  color: $grey-txt;
+  font-size: 1.8em;
+  font-weight: 400;
+}
+
+input{
+  font-size: 1.2em;
+  background: $darker;
+  display: block;
+  border: 1px solid $black;
+  width: 100%;
+  box-sizing: border-box;
+  margin:.6em 0;
+  padding: .5em 1em;
+  color: $white;
+  border-radius: .3em;
+}
+
+::placeholder{
+  color: $grey-txt;
+}
+
+button{
+  width:100%;
+  margin: .3em;
+}
+
+button img{
+  margin: 0;
+}
+
+.lft-cntnr a:first-of-type button{
+  background: $white;
+}
+
+.lft-cntnr a:nth-of-type(2) button{
+  background: $facebook-blue;
+}
+
+.lft-cntnr a:nth-of-type(3) button{
+  background: $google-red;
+}

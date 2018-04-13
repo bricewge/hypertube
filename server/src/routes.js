@@ -7,10 +7,10 @@ const SubtitlesController = require('./controllers/SubtitlesController')
 const ViewsController = require('./controllers/ViewsController')
 
 module.exports = (app, passport) => {
-  app.post('/register',
+  app.post('/auth/register',
     AuthenticationControllerPolicy.register,
     AuthenticationController.register)
-  app.post('/login',
+  app.post('/auth/login',
     AuthenticationController.login)
   app.get('/auth/facebook',
     passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))
