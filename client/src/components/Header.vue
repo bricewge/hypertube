@@ -1,6 +1,6 @@
 <template>
   <header>
-    <div class="link-cntnr align-lft">
+    <div v-if="$auth.check()" class="link-cntnr align-lft">
       <div><router-link to="/user"><img src="../assets/man-user.png"> </router-link></div>
       <div class="sort">{{ $t("kind") }} <img src="../assets/sort-down.png"/></div>
       <div class="sort">{{ $t("sort") }}<img src="../assets/sort-down.png"/></div>
@@ -10,7 +10,7 @@
     </div>
     <div class="link-cntnr align-rgt">
       <!-- THESE LINKS WILL BE REMOVED -->
-        <div v-if="!$store.state.isUserLoggedIn"><router-link to="/login">Se Connecter</router-link></div>
+        <div v-if="!$auth.check()"><router-link to="/login">Se Connecter</router-link></div>
         <div><router-link to="/movie">Show movie</router-link></div>
         <div><router-link to="/player">Player page</router-link></div>
       <!-- END -->
@@ -24,25 +24,19 @@
         <img src="../assets/united-kingdom.png" @click="setLang('en')" />
         <img src="../assets/france.png" @click="setLang('fr')" />
       </div>
-      <div v-if="$store.state.isUserLoggedIn"><router-link to="/user"><img @click="logout" src="../assets/logout-button.png"></router-link></div>
+      <div v-if="$auth.check()">
+        <router-link to="/user">
+          <img @click="$auth.logout()" src="../assets/logout-button.png">
+        </router-link>
+      </div>
     </div>
   </header>
 </template>
 
 <script>
-// if signed_in? this header, otherwise another header
-// FIND OUT how to know if user is signed in
 // ADD A FORM to select the current language
-// ADD the logout POST endpoint
 export default{
   methods: {
-    logout () {
-      this.$store.dispatch('setToken', null)
-      this.$store.dispatch('setUser', null)
-      this.$router.push({
-        name: 'root'
-      })
-    },
     setLang (lang) {
       this.$store.dispatch('setLang', lang)
     }
