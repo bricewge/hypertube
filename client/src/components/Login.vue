@@ -1,8 +1,12 @@
 <template>
-  <div class="main-cntnr">
-      <register />
-    <div class="lft-cntnr">
-      <h2>{{ $t('signin') }}</h2>
+<div class="main-cntnr">
+  <register />
+  <div class="lft-cntnr">
+    <h2>{{ $t('signin') }}</h2>
+    <v-form v-model="valid"
+            ref="loginForm"
+            @submit.prevent="login"
+            lazy-validation>
       <input name="email"
              type="email"
              v-model="email"
@@ -11,16 +15,18 @@
              type="password"
              v-model="password"
              :placeholder="$t('password')"/>
-      <v-alert type="success" :value="succes" transition="scale-transition" v-html="succes"/>
+      <v-alert type="success" :value="success" transition="scale-transition" v-html="success"/>
       <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
       <br>
-      <button @click="login">{{ $t('login-btn') }}</button><br><br>
-      <h2>{{ $t('or') }}</h2>
-      <router-link to='/auth/42'><button><img src='../assets/42.png'></button></router-link>
-      <router-link to='/auth/facebook'><button><img src='../assets/facebook-letter-logo.png'></button></router-link>
-      <router-link to='/auth/google'><button><img src='../assets/google-plus.png'></button></router-link>
-    </div>
+      <button>{{ $t('login-btn') }}</button>
+      <br><br>
+    </v-form>
+    <h2>{{ $t('or') }}</h2>
+    <router-link to='/auth/42'><button><img src='../assets/42.png'></button></router-link>
+    <router-link to='/auth/facebook'><button><img src='../assets/facebook-letter-logo.png'></button></router-link>
+    <router-link to='/auth/google'><button><img src='../assets/google-plus.png'></button></router-link>
   </div>
+</div>
 </template>
 
 <script>
@@ -40,6 +46,7 @@ export default {
     return {
       email: '',
       password: '',
+      valid: false,
       error: null,
       success: null
     }
@@ -90,5 +97,5 @@ export default {
 </script>
 
 <style scoped lang='scss'>
-@import '../assets/css/login.scss';
+  @import '../assets/css/login.scss';
 </style>

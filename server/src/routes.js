@@ -11,6 +11,10 @@ module.exports = (app, passport) => {
     AuthenticationController.register)
   app.post('/auth/login',
     AuthenticationController.login)
+  app.get('/auth/user',
+    AuthenticationController.authenticated,
+    UsersController.show)
+
   app.get('/auth/facebook',
     passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))
   app.get('/auth/facebook/callback',
@@ -32,12 +36,13 @@ module.exports = (app, passport) => {
     function (req, res) {
       res.redirect('/')
     })
+
   app.get('/movies',
     MoviesController.index)
   app.get('/movies/:movieId',
     MoviesController.show)
-  app.get('/users/:userId',
-    UsersController.show)
+  // app.get('/users/:userId',
+  //   UsersController.show)
   app.get('/movies/:movieId/comments',
     CommentsController.show)
   app.post('/comments',

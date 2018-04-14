@@ -1,16 +1,18 @@
 <template>
   <div class="usr-cntnr">
+    <!-- TODO Handle where there is no image set -->
     <img v-bind:src='user.image_url'>
-    <p>{{ user.firstname }} {{ user.name }}</p>
-    <p>{{ user.login }}</p>
-    <p>{{ user.age }}</p>
-    <p>{{ user.password }}</p>
-    <p>{{ user.email }}</p>
+    <p>{{ $auth.user().firstname }} {{ $auth.user().name }}</p>
+    <p>{{ $auth.user().login }}</p>
+    <!-- <p>{{ user.age }}</p> -->
+    <p>{{ $auth.user().email }}</p>
+    <p>password</p>
   </div>
 </template>
 
 <script>
 // GET current user informations or user informations based on his ID
+// TODO Use a form  to modify user data
 export default {
   data () {
     return {

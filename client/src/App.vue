@@ -1,5 +1,6 @@
 <template>
-  <div id="app">
+<div id="app">
+  <div v-if="$auth.ready()">
     <v-app dark>
       <page-header/>
       <br>
@@ -8,8 +9,12 @@
           <router-view/>
         </v-container>
       </main>
-    </v-app>
+  </v-app>
   </div>
+  <div v-if="!$auth.ready()">
+    <p>Loading ...</p>
+  </div>
+</div>
 </template>
 
 <script>

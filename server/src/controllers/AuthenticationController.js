@@ -5,7 +5,8 @@ const config = require('../config/config')
 
 function jwtSignUser (user) {
   return jwt.sign(
-    { login: user.login },
+    // NOTE Do we always have thoses values set in all oauth methods??
+    { login: user.login, email: user.email },
     config.authentication.jwtSecret,
     {expiresIn: '30d'}
   )
@@ -51,7 +52,6 @@ module.exports = {
       console.log(req.body, user)
       if (!user) throw new Error()
       if (! await user.comparePassword(password)) throw new Error()
-      console.log(user)
 
       res.setHeader('Authorization', jwtSignUser(user))
       res.sendStatus(201)
@@ -59,6 +59,25 @@ module.exports = {
       console.log(err)
       res.status(400).send({
         error: 'Incorrect login credentials'
+      })
+    }
+  },
+
+  async authenticated (req, res, next) {
+    try {
+      const authHeader = req.get('Authorization')
+      if (!authHeader || authHeader.indexOf('Bearer ') !== 0) {
+        throw new Error()
+      }
+      const token = authHeader.substr(7)
+      const decoded = jwt.verify(token, config.authentication.jwtSecret)
+      req.email = decoded.email
+      req.login = decoded.login
+      next()
+    } catch (err) {
+      // console.log(err)
+      res.status(400).send({
+        error: 'Invalid token'
       })
     }
   }
