@@ -8,26 +8,26 @@
   <h2>{{ $t('register') }}</h2>
   <input name="email"
          type="email"
-         v-model="email"
+         v-model="form.email"
          v-validate="'required|email'"
          :placeholder="$t('email')"/>
   <input type="text"
          name="name"
-         v-model="name"
+         v-model="form.name"
          v-validate="'required|alpha'"
          :placeholder="$t('name')"/>
   <input type="text"
          name="firstname"
-         v-model="firstname"
+         v-model="form.firstname"
          :placeholder="$t('firstname')"/>
   <input type="text"
          name="login"
-         v-model="login"
+         v-model="form.login"
          :placeholder="$t('login')"/>
   <input name="password"
          label="Mot de passe"
          type="password"
-         v-model="password"
+         v-model="form.password"
          :placeholder="$t('password')"/>
   <input type="text"
          name="image"
@@ -35,7 +35,7 @@
   <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
   <span v-show="errors.any()">{{ errors.all() }}</span>
   <br>
-  <button @click="register">{{ $t('register-btn') }}</button><br><br>
+  <button>{{ $t('register-btn') }}</button><br><br>
 <!-- </div> -->
 </v-form>
 </template>
@@ -48,12 +48,14 @@ import {validPassword, nonEmptyPassword, validEmail} from '@/util/validation'
 export default {
   data () {
     return {
-      email: '',
-      firstname: '',
-      name: '',
-      login: '',
-      password: '',
-      image: '', // TODO Manage thoses fucking images!!!
+      form: {
+        email: '',
+        firstname: '',
+        name: '',
+        login: '',
+        password: '',
+        image: '' // TODO Manage thoses fucking images!!!
+      },
       error: null,
       valid: false
     }
@@ -65,16 +67,9 @@ export default {
       if (! await this.$validator.validateAll()) return
       console.log(this)
       try {
-        const data = {
-          login: this.login,
-          email: this.email,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          password: this.password
-        }
         const response = await this.$auth.register({
-          data: data,
-          error: function (err) { }
+          data: this.form,
+          // error: function (err) { }
         })
         // this.alert.visible = false
       } catch (err) {

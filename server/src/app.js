@@ -18,6 +18,8 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
+// TODO Write middleware to manage ValidationError from celebration
+
 passports.passport.use(new passports.FacebookStrategy(pass.facebook,
   (accessToken, refreshToken, profile, cb) => {
     console.log(accessToken, refreshToken, profile)

@@ -1,5 +1,4 @@
 const AuthenticationController = require('./controllers/AuthenticationController')
-const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy')
 const MoviesController = require('./controllers/MoviesController')
 const UsersController = require('./controllers/UsersController')
 const CommentsController = require('./controllers/CommentsController')
@@ -8,7 +7,7 @@ const ViewsController = require('./controllers/ViewsController')
 
 module.exports = (app, passport) => {
   app.post('/auth/register',
-    AuthenticationControllerPolicy.register,
+    AuthenticationController.validateRegister,
     AuthenticationController.register)
   app.post('/auth/login',
     AuthenticationController.login)

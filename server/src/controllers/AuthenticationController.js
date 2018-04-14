@@ -1,5 +1,6 @@
 const {User} = require('../models')
 const jwt = require('jsonwebtoken')
+const { celebrate, Joi, errors } = require('celebrate')
 const config = require('../config/config')
 
 function jwtSignUser (user) {
@@ -10,6 +11,17 @@ function jwtSignUser (user) {
 }
 
 module.exports = {
+  validateRegister: celebrate(
+      {body: Joi.object().keys({
+        email: Joi.string().email(),
+        password: Joi.string().min(8),
+        name: Joi.string().alphanum(),
+        firstname: Joi.string().alphanum(),
+        login: Joi.string().alphanum(),
+        image: Joi.any().optional() // TODO Verify image
+      })},
+      {presence: 'required'}),
+
   async register (req, res) {
     try {
       const user = await User.create(req.body)
@@ -24,6 +36,7 @@ module.exports = {
       })
     }
   },
+
   async login (req, res) {
     try {
       const {email, password} = req.body
