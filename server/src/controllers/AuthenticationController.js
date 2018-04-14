@@ -4,10 +4,11 @@ const { celebrate, Joi, errors } = require('celebrate')
 const config = require('../config/config')
 
 function jwtSignUser (user) {
-  const ONE_WEEK = 60 * 60 * 24 * 7
-  return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: ONE_WEEK
-  })
+  return jwt.sign(
+    { login: user.login },
+    config.authentication.jwtSecret,
+    {expiresIn: '30d'}
+  )
 }
 
 module.exports = {
@@ -37,6 +38,7 @@ module.exports = {
     }
   },
 
+  // TODO Write valdiator
   async login (req, res) {
     try {
       const {email, password} = req.body
@@ -46,28 +48,17 @@ module.exports = {
         }
       })
 
-      if (!user) {
-        return res.status(403).send({
-          error: 'Login incorrect'
-        })
-      }
+      console.log(req.body, user)
+      if (!user) throw new Error()
+      if (! await user.comparePassword(password)) throw new Error()
+      console.log(user)
 
-      const isPasswordValid = await user.comparePassword(password)
-      if (!isPasswordValid) {
-        return res.status(403).send({
-          error: 'Mot de passe incorrect'
-        })
-      }
-
-      const userJson = user.toJSON()
-      return res.status(200).send({
-        user: userJson,
-        token: jwtSignUser(userJson),
-        success: 'OKlol'
-      })
+      res.setHeader('Authorization', jwtSignUser(user))
+      res.sendStatus(201)
     } catch (err) {
-      res.status(500).send({
-        error: 'Erreur lors de la connexion'
+      console.log(err)
+      res.status(400).send({
+        error: 'Incorrect login credentials'
       })
     }
   }

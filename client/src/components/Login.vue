@@ -47,10 +47,10 @@ export default {
   methods: {
     async login () {
       try {
-        const response = await AuthenticationService.login({
+        const response = await this.$auth.login({ data: {
           email: this.email,
           password: this.password
-        })
+        }})
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
         this.success = 'Connexion réussie :D'
