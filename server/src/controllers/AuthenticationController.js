@@ -25,6 +25,7 @@ module.exports = {
       {presence: 'required'}),
 
   async register (req, res) {
+    console.log(req)
     try {
       const user = await User.create(req.body)
       const userJson = user.toJSON()

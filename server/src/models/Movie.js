@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     summary: DataTypes.TEXT,
     year_of_production: DataTypes.STRING,
     director: DataTypes.STRING,
+    producer: DataTypes.STRING,
     casting: DataTypes.STRING,
     duration_in_min: DataTypes.STRING,
     rating: DataTypes.STRING
