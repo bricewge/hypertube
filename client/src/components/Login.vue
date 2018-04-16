@@ -22,9 +22,15 @@
       <br><br>
     </v-form>
     <h2>{{ $t('or') }}</h2>
-    <router-link to='/auth/42'><button><img src='../assets/42.png'></button></router-link>
-    <router-link to='/auth/facebook'><button><img src='../assets/facebook-letter-logo.png'></button></router-link>
-    <router-link to='/auth/google'><button><img src='../assets/google-plus.png'></button></router-link>
+    <button @click="oauth2('42')">
+      <img src='../assets/42.png'>
+    </button>
+    <button @click="oauth2('facebook')">
+      <img src='../assets/facebook-letter-logo.png'>
+    </button>
+    <button @click="oauth2('google')">
+      <img src='../assets/google-plus.png'>
+    </button>
   </div>
 </div>
 </template>
@@ -48,9 +54,24 @@ export default {
       password: '',
       valid: false,
       error: null,
-      success: null
+      success: null,
+      code: this.$route.query.code,
+      type: this.$route.params.type
     }
   },
+
+  mounted() {
+    console.log(this.$route.query.tkn)
+    if (this.$route.query.tkn) {
+      window.localStorage.setItem('default_auth_token', this.$route.query.tkn)
+      this.$auth.token(null, this.$route.query.tkn)
+      document.cookie = 'rememberMe=true'
+      this.$auth.watch.authenticated = true
+      this.$auth.fetch()
+      this.$router.push('/')
+    }
+  },
+
   methods: {
     async login () {
       try {
@@ -58,13 +79,14 @@ export default {
           email: this.email,
           password: this.password
         }})
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
-        this.success = 'Connexion réussie :D'
+        this.$store.dispatch('settoken', response.data.token)
+        this.$store.dispatch('setuser', response.data.user)
+        this.success = 'connexion réussie :d'
       } catch (err) {
         this.error = err.response.data.error
       }
     },
+
     async register () {
       try {
         const response = await AuthenticationService.register({
@@ -76,8 +98,13 @@ export default {
       } catch (err) {
         this.error = err.response.data.error
       }
+    },
+
+    async oauth2 (strategy) {
+      window.location.replace(`/api/auth/${strategy}`)
     }
   },
+
   watch: {
     email (value) {
       this.error = null
@@ -87,11 +114,6 @@ export default {
       this.error = null
       this.success = null
     }
-  },
-  mounted () {
-    setTimeout(() => {
-      this.email = ''
-    }, 1000)
   }
 }
 </script>

@@ -12,13 +12,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     facebookId: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true
     },
     googleId: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true
     },
     fortyTwoId: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true
     },
     login: {
       type: DataTypes.STRING
@@ -42,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   User.beforeValidate(async (user, options) => {
+    if (!user.password) return
     user.password = await bcrypt.hash(user.password, SALT_ROUNDS)
   })
 

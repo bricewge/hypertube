@@ -18,24 +18,18 @@ module.exports = (app, passport) => {
   app.get('/auth/facebook',
     passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))
   app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    function (req, res) {
-      res.redirect('/')
-    })
+    passport.authenticate('facebook', {session: false}),
+    AuthenticationController.login)
   app.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] }))
   app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    function (req, res) {
-      res.redirect('/')
-    })
+    passport.authenticate('google', {session: false}),
+    AuthenticationController.login)
   app.get('/auth/42',
     passport.authenticate('42'))
   app.get('/auth/42/callback',
-    passport.authenticate('42', { failureRedirect: '/login' }),
-    function (req, res) {
-      res.redirect('/')
-    })
+    passport.authenticate('42', { session: false }),
+    AuthenticationController.login)
 
   app.get('/movies',
     MoviesController.index)
