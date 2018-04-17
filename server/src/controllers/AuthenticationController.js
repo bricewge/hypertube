@@ -1,6 +1,6 @@
 const {User} = require('../models')
 const jwt = require('jsonwebtoken')
-const { celebrate, Joi, errors } = require('celebrate')
+const { celebrate, Joi} = require('celebrate')
 const config = require('../config/config')
 
 function jwtSignUser (user) {
@@ -25,7 +25,7 @@ module.exports = {
     {presence: 'required'}),
 
   async register (req, res) {
-    console.log(req)
+    // console.log(req)
     try {
       const user = await User.create(req.body)
       const userJson = user.toJSON()
@@ -63,7 +63,7 @@ module.exports = {
       }
 
     } catch (err) {
-      console.log(err)
+      // console.log(err)
       res.status(400).send({
         error: 'Incorrect login credentials'
       })

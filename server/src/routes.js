@@ -33,19 +33,24 @@ module.exports = (app, passport) => {
     AuthenticationController.login)
 
   app.get('/movies',
+    AuthenticationController.authenticated,
     MoviesController.index)
   app.get('/movies/:movieId',
+    AuthenticationController.authenticated,
     MoviesController.show)
-  // app.get('/users/:userId',
-  //   UsersController.show)
   app.get('/movies/:movieId/comments',
+    AuthenticationController.authenticated,
     CommentsController.show)
   app.post('/comments',
+    AuthenticationController.authenticated,
     CommentsController.post)
   app.get('/movies/:movieId/subtitles',
+    AuthenticationController.authenticated,
     SubtitlesController.show)
   app.get('/movies/:movieId/views',
+    AuthenticationController.authenticated,
     ViewsController.show)
   app.get('/streams/:movieId',
+    AuthenticationController.authenticated,
     StreamController.show)
 }

@@ -4,6 +4,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const {sequelize} = require('./models')
 const passport = require('./passport.js')
+const { errors } = require('celebrate')
 
 const config = require('./config/config')
 const app = express()
@@ -13,6 +14,7 @@ app.use(cors())
 // TODO Write middleware to manage ValidationError from celebration
 
 require('./routes')(app, passport)
+app.use(errors())
 sequelize.sync()
   .then(() => {
     app.listen(config.port)
