@@ -16,12 +16,9 @@ module.exports = {
             }
           })
           if (movies.length == 0)
-          {
-        	  Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q);
-          }
-          else {
-          	res.send(movies);
-          }
+            Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q)
+          else
+            res.send(movies);
       }
       else {
           const movies = await Movie.findAll({
