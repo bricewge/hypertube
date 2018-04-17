@@ -4,6 +4,7 @@ const UsersController = require('./controllers/UsersController')
 const CommentsController = require('./controllers/CommentsController')
 const SubtitlesController = require('./controllers/SubtitlesController')
 const ViewsController = require('./controllers/ViewsController')
+const StreamController = require('./controllers/StreamController')
 
 module.exports = (app, passport) => {
   app.post('/auth/register',
@@ -45,4 +46,6 @@ module.exports = (app, passport) => {
     SubtitlesController.show)
   app.get('/movies/:movieId/views',
     ViewsController.show)
+  app.get('/streams/:movieId',
+    StreamController.show)
 }

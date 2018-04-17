@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     producer: DataTypes.STRING,
     casting: DataTypes.STRING,
     duration_in_min: DataTypes.STRING,
-    rating: DataTypes.STRING
+    rating: DataTypes.STRING,
+    file_path: DataTypes.STRING
   })
 
   return Movie
