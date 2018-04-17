@@ -11,7 +11,7 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 // TODO Write middleware to manage ValidationError from celebration
-
+require('./middlewares/errors')(app)
 require('./routes')(app, passport)
 sequelize.sync()
   .then(() => {
