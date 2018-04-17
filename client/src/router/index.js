@@ -18,6 +18,10 @@ export default new Router({
       meta: {auth: true}
     },
     {
+      path: '*',
+      redirect: '/'
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -36,7 +40,7 @@ export default new Router({
       meta: {auth: true}
     },
     {
-      path: '/player',
+      path: '/player/:imdbId',
       name: 'play',
       component: Player,
       meta: {auth: true}

@@ -56,8 +56,8 @@ module.exports = {
   async show (req, res) {
     try {
       if (!req.params.movieId) throw new Error()
-      let movie = await Movie.findById(req.params.movieId)
-      if (!movie) {
+      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}})
+      if (!movie.file_path) {
         // TODO Write getMagnetLink
         // let magnetLink = getMagnetLink(req.params.movieId)
         let magnetLink = hashes[0]

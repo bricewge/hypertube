@@ -10,7 +10,7 @@
     </div>
     <div class="comment-cntnr">
       <input type="text" name="comment" :placeholder="$t('your-comment')">
-      <div v-for='comment in comments' v-bind:key='comment' class="comment">
+      <div v-for='(comment, index) in comments' v-bind:key='index' class="comment">
         <p>{{ comment.user_name }} - {{ $t('il-y-a') }} {{ comment.created_at }} {{ $t('ago') }}</p>
         <p>{{ comment.content }}</p>
       </div>
@@ -37,10 +37,7 @@ export default {
 
   data () {
     return {
-      movie: {
-        title: 'Pulp Fiction',
-        movie_path: 'Path to movie'
-      },
+      movie: '',
       comments: [
         {
           user_name: 'Josiane',
@@ -74,6 +71,15 @@ export default {
       }
     }
   },
+
+  async mounted () {
+    if (!this.$route.params.imdbId) return
+    const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
+    console.log(response)
+    this.movie = response.data
+
+  },
+
   methods: {
     playerReadied (player) {
       var hls = player.tech({ IWillNotUseThisInPlugins: true }).hls
