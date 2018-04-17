@@ -34,13 +34,10 @@ module.exports = {
         content: req.body.content,
         movie_id: parseInt(req.body.movie_id)
       })
-      //  console.log(comments)
       try {
         const user = await User.findById(req.body.user_id)
-        //  console.log(user)
         try {
           const movie = await Movie.findById(req.body.movie_id)
-          //  console.log(movie)
           const res = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
