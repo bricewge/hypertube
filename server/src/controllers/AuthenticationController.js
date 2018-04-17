@@ -14,15 +14,15 @@ function jwtSignUser (user) {
 
 module.exports = {
   validateRegister: celebrate(
-      {body: Joi.object().keys({
-        email: Joi.string().email(),
-        password: Joi.string().min(8),
-        name: Joi.string().alphanum(),
-        firstname: Joi.string().alphanum(),
-        login: Joi.string().alphanum(),
-        image: Joi.any().optional() // TODO Verify image
-      })},
-      {presence: 'required'}),
+    {body: Joi.object().keys({
+      email: Joi.string().email(),
+      password: Joi.string().min(8),
+      name: Joi.string().alphanum(),
+      firstname: Joi.string().alphanum(),
+      login: Joi.string().alphanum(),
+      image: Joi.any().optional() // TODO Verify image
+    })},
+    {presence: 'required'}),
 
   async register (req, res) {
     console.log(req)
@@ -43,19 +43,25 @@ module.exports = {
   // TODO Write valdiator
   async login (req, res) {
     try {
-      const {email, password} = req.body
-      const user = await User.findOne({
-        where: {
-          email: email
-        }
-      })
+      let user
+      if (!req.user) {
+        const {email, password} = req.body
+        user = await User.findOne({
+          where: {
+            email: email
+          }
+        })
+        // console.log(req.body, user)
+        if (!user) throw new Error()
+        if (!await user.comparePassword(password)) throw new Error()
+        res.setHeader('Authorization', jwtSignUser(user))
+        res.sendStatus(201)
+      } else {
+        // console.log(req.user)
+        user = req.user
+        res.redirect('http://localhost:8080/login?tkn=' + jwtSignUser(user))
+      }
 
-      console.log(req.body, user)
-      if (!user) throw new Error()
-      if (! await user.comparePassword(password)) throw new Error()
-
-      res.setHeader('Authorization', jwtSignUser(user))
-      res.sendStatus(201)
     } catch (err) {
       console.log(err)
       res.status(400).send({
