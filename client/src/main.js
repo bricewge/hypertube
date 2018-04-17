@@ -10,7 +10,6 @@ import 'vuetify/dist/vuetify.min.css'
 import store from '@/store/store'
 import VeeValidate from 'vee-validate'
 
-
 Vue.config.productionTip = false
 
 Vue.use(Vuetify)

@@ -46,19 +46,7 @@
 </template>
 
 <script>
-import HomeService from '@/service/HomeService'
-// var url = 'https://yts.am/api/v2/list_movies.json?limit=50&sort_by=title'
-var url = 'http://localhost:8081/movies'
-// GOALS :
-// GET random data from BACK-END API, like 30 of each then get the next 30 and show them on scroll down
-// !!!!!! OR get the complete array of movies and show only the first 30 then on scroll down etc.
-// IF user use the search form ->
-// POST value to back-end
-// GET new array of movies
-// LOAD selected movies (no page reload)
-// IF USER use a filter (by title, kind, etc.) ->
-// SORT All results by x and show them
-// ON CLICK ON A MOVIE POST the movie name to the server and prepare to redirect to SHOW movie
+// TODO Filter and sort the movies
 export default {
   data () {
     return {
@@ -71,12 +59,12 @@ export default {
         descending: true,
         rowsPerPage: 6
       },
-      search: '',
+      search: ''
     }
   },
   async mounted () {
     this.loading = true
-    let res = await HomeService.getMoviesList(url)
+    let res = await this.axios.get('/movies')
     this.loading = false
     this.movies = res.data // .data.movies
     console.log(this.movies)

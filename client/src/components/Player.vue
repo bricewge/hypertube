@@ -5,7 +5,7 @@
     <div class="video-cntnr">
       <video-player class="vjs-custom-skin"
                     :options="playerOptions"
-                    @ready="playerReadied">
+                    @ready="playerReady">
       </video-player>
     </div>
     <div class="comment-cntnr">
@@ -73,21 +73,16 @@ export default {
   },
 
   async mounted () {
+    // The player need the authorization token to get the stream
+    videojs.Hls.xhr.beforeRequest = (options) => {
+      options.headers = {Authorization: `Bearer ${this.$auth.token()}`}
+      return options
+    }
+
     if (!this.$route.params.imdbId) return
     const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
-    console.log(response)
+    // console.log(response)
     this.movie = response.data
-
-  },
-
-  methods: {
-    playerReadied (player) {
-      var hls = player.tech({ IWillNotUseThisInPlugins: true }).hls
-      player.tech_.hls.xhr.beforeRequest = function (options) {
-        // console.log(options)
-        return options
-      }
-    }
   }
 }
 </script>

@@ -36,11 +36,7 @@
 </template>
 
 <script>
-// ADD the feature to download images
-// POST form informations on SUBMIT register
-// POST form informations on SUBMIT login
-// add token to user if logged in successfully
-import AuthenticationService from '@/service/AuthenticationService'
+// TODO ADD the feature to upload images
 import Register from '@/components/Register'
 
 export default {
@@ -60,7 +56,7 @@ export default {
     }
   },
 
-  mounted() {
+  mounted () {
     console.log(this.$route.query.tkn)
     if (this.$route.query.tkn) {
       window.localStorage.setItem('default_auth_token', this.$route.query.tkn)
@@ -79,22 +75,6 @@ export default {
           email: this.email,
           password: this.password
         }})
-        this.$store.dispatch('settoken', response.data.token)
-        this.$store.dispatch('setuser', response.data.user)
-        this.success = 'connexion réussie :d'
-      } catch (err) {
-        this.error = err.response.data.error
-      }
-    },
-
-    async register () {
-      try {
-        const response = await AuthenticationService.register({
-          email: this.registeremail,
-          password: this.registerpassword
-        })
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
       } catch (err) {
         this.error = err.response.data.error
       }

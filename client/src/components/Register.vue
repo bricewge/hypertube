@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import AuthenticationService from '@/service/AuthenticationService'
-// import validation from '@/util/validation'
 import {validPassword, nonEmptyPassword, validEmail} from '@/util/validation'
 
 export default {
@@ -63,34 +61,21 @@ export default {
 
   methods: {
     async register () {
-      // this.samePasswords()
-      if (! await this.$validator.validateAll()) return
+      if (!await this.$validator.validateAll()) return
       console.log(this)
       try {
         const response = await this.$auth.register({
-          data: this.form,
+          data: this.form
           // error: function (err) { }
         })
         // this.alert.visible = false
       } catch (err) {
-        this.error = err.response.data.error
+        this.error = err.response.data.message || err.response.data.error
         // this.alert.type = 'error'
         // this.alert.message = err.response.data.message
         // this.alert.visible = true
       }
-    },
-    // async register () {
-    //   try {
-    //     const response = await AuthenticationService.register({
-    //       email: this.email,
-    //       password: this.password
-    //     })
-    //     this.$store.dispatch('setToken', response.data.token)
-    //     this.$store.dispatch('setUser', response.data.user)
-    //   } catch (err) {
-    //     this.error = err.response.data.error
-    //   }
-    // }
+    }
   }
 }
 </script>
