@@ -1,6 +1,7 @@
 const {Comment} = require('../models')
 const {User} = require('../models')
 const {Movie} = require('../models')
+const { celebrate, Joi, errors } = require('celebrate')
 
 module.exports = {
   async index (req, res) {
@@ -15,29 +16,51 @@ module.exports = {
       })
     }
   },
+  validateShowComments: celebrate({
+    params: Joi.object().keys({
+      movieId: Joi.number().integer()
+    })
+  }
+  ),
   async show (req, res) {
     try {
-      const comments = await Comment.findAll({where: {movie_id: req.params.movieId}})
+      const comments = await Comment.findAll({
+        where: {MovieId: req.params.movieId},
+        include: [{
+          model: User,
+          through: {
+            attribute: ['login']
+          }
+        }]
+      })
       console.log(comments)
       res.status(200).send(comments)
     } catch (err) {
+      console.log(err)
       res.status(500).send({
         error: 'An error occured trying to fetch the comment'
       })
     }
   },
+  validatePostComments: celebrate({
+    body: Joi.object().keys({
+      UserId: Joi.number().integer(),
+      MovieId: Joi.number().integer(),
+      content: Joi.string().min(2).alphanum()
+    })
+  }),
   async post (req, res) {
     console.log(req.body)
     try {
       const comments = await Comment.create({
-        user_id: parseInt(req.body.user_id),
+        UserId: parseInt(req.body.user_id),
         content: req.body.content,
-        movie_id: parseInt(req.body.movie_id)
+        MovieId: parseInt(req.body.movie_id)
       })
       try {
-        const user = await User.findById(req.body.user_id)
+        const user = await User.findById(req.body.UserId)
         try {
-          const movie = await Movie.findById(req.body.movie_id)
+          const movie = await Movie.findById(req.body.MovieId)
           const res = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,

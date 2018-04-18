@@ -6,8 +6,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Comment.associate = function (models) {
-    Comment.belongTo(models.User)
-    Comment.belongTo(models.Movie)
+    Comment.belongsTo(models.User)
+    Comment.belongsTo(models.Movie)
   }
   return Comment
 }
