@@ -10,10 +10,6 @@
       <!-- THESE LINKS WILL BE REMOVED -->
         <div><router-link to="/movie">Show movie</router-link></div>
       <!-- END -->
-      <div class="search">
-        <img src="../assets/magnifying-glass.png"/>
-        <input type="text" :placeholder="$t('search')">
-      </div>
       <div class="lang">
         <img src="../assets/smurf.png" @click="setLang('st')" />
         <img src="../assets/china.png" @click="setLang('cn')" />

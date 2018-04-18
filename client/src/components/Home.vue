@@ -61,8 +61,16 @@
             box
             ></v-text-field>
         </v-flex>
-        <v-spacer/><v-spacer></v-spacer>
-        <v-flex xs4 offset-xs8 md2 offset-md10>
+        <v-flex xs5 md3>
+          <v-text-field
+            v-model="search"
+            label="Search"
+            @keyup.enter="searchMovies"
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 offset-xs3
+                md2 offset-md7
+                >
           <v-select
             v-model="sort"
             @input="sortBy"
@@ -141,7 +149,8 @@ export default {
         { text: 'Rating', sort: 'rating'},
         { text: 'Year', sort: 'year'},
       ],
-      sortIcon: 'arrow_downward'
+      sortIcon: 'arrow_downward',
+      search: ''
     }
   },
 
@@ -149,13 +158,13 @@ export default {
     this.loading = true
     let res = await this.axios.get('/movies')
     this.loading = false
-    this.movies = res.data // .data.movies
+    this.movies = res.data
     this.sortBy(this.sorts[2]) // By default sort by rating
     console.log(this.movies)
   },
 
   computed: {
-    filteredMovies (input) {
+    filteredMovies () {
       let movies = this.movies
       if (this.filter.title){
         movies = movies.filter(movie => movie.title.toLowerCase()
@@ -188,6 +197,13 @@ export default {
     sortBy (input) {
       this.pagination.sortBy = input.sort
     },
+
+    async searchMovies () {
+      this.loading = true
+      const response = await this.axios.get('/movies', {params: {q: this.search}})
+      this.movies = response.data
+      this.loading = false
+    }
   }
 }
 </script>
