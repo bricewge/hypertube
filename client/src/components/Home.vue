@@ -5,14 +5,85 @@
     <img src='../assets/spinner.mov.gif'/>
   </div>
   <v-container fluid grid-list-lg>
+    <v-form
+      @submit.prevent="filter"
+      >
+      <v-layout wrap>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.title"
+            label="Title"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.genre"
+            label="Genre"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.rating.min"
+            label="Rating min"
+            type="number"
+            step="any"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.rating.max"
+            label="Rating max"
+            type="number"
+            step="any"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.year.min"
+            label="Year min"
+            mask="####"
+            type="number"
+            step="any"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-flex xs4 md2>
+          <v-text-field
+            v-model="filter.year.max"
+            label="Year max"
+            mask="####"
+            type="number"
+            step="any"
+            box
+            ></v-text-field>
+        </v-flex>
+        <v-spacer/><v-spacer></v-spacer>
+        <v-flex xs4 offset-xs8 md2 offset-md10>
+          <v-select
+            v-model="sort"
+            @input="sortBy"
+            :items="sorts"
+            item-value="text"
+            return-object
+            :prepend-icon="sortIcon"
+            :prepend-icon-cb="toggleOrder"
+            label="Sort by"
+            ></v-select>
+        </v-flex>
+      </v-layout>
+    </v-form>
+
     <v-data-iterator
       content-tag="v-layout"
       row
       wrap
-      :items="movies"
+      :items="filteredMovies"
       :rows-per-page-items="rowsPerPageItems"
       :pagination.sync="pagination"
-      :search="search"
       >
       <v-flex
         slot="item"
@@ -46,28 +117,77 @@
 </template>
 
 <script>
-// TODO Filter and sort the movies
 export default {
   data () {
     return {
-      moviesTest: [],
       movies: [],
       loading: false,
-      rowsPerPageItems: [4, 6, 12],
+      rowsPerPageItems: [6, 12, 18],
       pagination: {
         sortBy: 'points',
         descending: true,
-        rowsPerPage: 6
+        rowsPerPage: 12
       },
-      search: ''
+      filter: {
+        title: '',
+        genre: '',
+        rating: {min: '', max: ''},
+        year: {min:'', max: ''}
+      },
+      sort: 'Rating',
+      sorts: [
+        { text: 'Title', sort: 'title'},
+        { text: 'Genre', sort: 'genre'},
+        { text: 'Rating', sort: 'rating'},
+        { text: 'Year', sort: 'year'},
+      ],
+      sortIcon: 'arrow_downward'
     }
   },
+
   async mounted () {
     this.loading = true
     let res = await this.axios.get('/movies')
     this.loading = false
     this.movies = res.data // .data.movies
+    this.sortBy(this.sorts[2]) // By default sort by rating
     console.log(this.movies)
+  },
+
+  computed: {
+    filteredMovies (input) {
+      let movies = this.movies
+      if (this.filter.title){
+        movies = movies.filter(movie => movie.title.toLowerCase()
+                               .includes(this.filter.title.toLowerCase()))
+      }
+      // TODO Waiting for support of genre in DB
+      // if (this.filter.genre){
+      //   movies = movies.filter(movie => movie.genre.toLowerCase()
+      //                          .includes(this.filter.genre.toLowerCase()))
+      // }
+      let ratingMin = parseFloat(this.filter.rating.min) || 0
+      if (ratingMin) movies = movies.filter(movie => movie.rating >= ratingMin)
+      let ratingMax = parseFloat(this.filter.rating.max) || 0
+      if (ratingMax) movies = movies.filter(movie => movie.rating <= ratingMax)
+      // TODO Waiting for support of year in DB
+      let yearMin = parseFloat(this.filter.year.min) || 0
+      // if (yearMin) movies = movies.filter(movie => movie.year >= yearMin)
+      // let yearMax = parseFloat(this.filter.year.max) || 0
+      // if (yearMax) movies = movies.filter(movie => movie.year <= yearMax)
+      return movies
+    }
+  },
+
+  methods: {
+    toggleOrder () {
+      this.sortIcon = this.pagination.descending ? 'arrow_upward' : 'arrow_downward'
+      this.pagination.descending = !this.pagination.descending
+    },
+
+    sortBy (input) {
+      this.pagination.sortBy = input.sort
+    },
   }
 }
 </script>
@@ -104,9 +224,9 @@ export default {
   color: $white;
   font-weight: 600;
   font-size: 1.2em;
-}
+  }
 
-.load img{
+  .load img{
   width: 5em;
   opacity: .5;
 }

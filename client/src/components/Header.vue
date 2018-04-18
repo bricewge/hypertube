@@ -2,8 +2,6 @@
   <header>
     <div v-if="$auth.check()" class="link-cntnr align-lft">
       <div><router-link to="/user"><img src="../assets/man-user.png"> </router-link></div>
-      <div class="sort">{{ $t("kind") }} <img src="../assets/sort-down.png"/></div>
-      <div class="sort">{{ $t("sort") }}<img src="../assets/sort-down.png"/></div>
     </div>
     <div>
       <router-link to="/" ><img src="../assets/logo-small.png"/></router-link>
