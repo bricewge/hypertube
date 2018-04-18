@@ -1,16 +1,14 @@
 <template>
   <header>
     <div v-if="$auth.check()" class="link-cntnr align-lft">
-      <div><router-link to="/user"><img src="../assets/man-user.png"> </router-link></div>
+      <div><router-link to="/account"><img src="../assets/man-user.png"> </router-link></div>
     </div>
     <div>
       <router-link to="/" ><img src="../assets/logo-small.png"/></router-link>
     </div>
     <div class="link-cntnr align-rgt">
       <!-- THESE LINKS WILL BE REMOVED -->
-        <div v-if="!$auth.check()"><router-link to="/login">Se Connecter</router-link></div>
         <div><router-link to="/movie">Show movie</router-link></div>
-        <div><router-link to="/player">Player page</router-link></div>
       <!-- END -->
       <div class="search">
         <img src="../assets/magnifying-glass.png"/>

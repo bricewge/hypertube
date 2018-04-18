@@ -4,6 +4,7 @@ import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Movie from '@/components/Movie'
 import User from '@/components/User'
+import Account from '@/components/Account'
 import Player from '@/components/Player'
 
 Vue.use(Router)
@@ -34,7 +35,13 @@ export default new Router({
       meta: {auth: true}
     },
     {
-      path: '/user',
+      path: '/account',
+      name: 'account',
+      component: Account,
+      meta: {auth: true}
+    },
+    {
+      path: '/user/:login',
       name: 'user',
       component: User,
       meta: {auth: true}
