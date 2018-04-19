@@ -15,6 +15,12 @@ module.exports = (app, passport) => {
   app.get('/auth/user',
     AuthenticationController.authenticated,
     UsersController.self)
+  app.post('/auth/forgot',
+    AuthenticationController.validateForgotPassword,
+    AuthenticationController.forgotPassword)
+  app.post('/auth/reset',
+    AuthenticationController.validateResetPassword,
+    AuthenticationController.resetPassword)
 
   app.get('/auth/facebook',
     passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))

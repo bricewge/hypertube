@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     language: {
       type: DataTypes.STRING
+    },
+    resetPasswordToken: {
+      type: DataTypes.STRING
     }
   })
 

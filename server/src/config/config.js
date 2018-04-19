@@ -9,5 +9,9 @@ module.exports = {
   formats: {
     native: ['webm', 'mp4'],
     transcode: ['mkv', 'avi']
+  },
+  upload: {
+    dest: 'public/uploads/',
+    limits: {fileSize: 5000000, files: 1}
   }
 }

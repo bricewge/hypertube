@@ -6,6 +6,8 @@ import Movie from '@/components/Movie'
 import User from '@/components/User'
 import Account from '@/components/Account'
 import Player from '@/components/Player'
+import Forgot from '@/components/Forgot'
+import Reset from '@/components/Reset'
 
 Vue.use(Router)
 
@@ -27,6 +29,18 @@ export default new Router({
       name: 'login',
       component: Login,
       meta: {auth: false}
+    },
+    {
+      path: '/forgot',
+      name: 'forgot',
+      meta: {auth: false},
+      component: Forgot
+    },
+    {
+      path: '/reset/:token',
+      name: 'reset',
+      meta: {auth: false},
+      component: Reset
     },
     {
       path: '/movie',

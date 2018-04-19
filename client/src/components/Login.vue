@@ -20,6 +20,7 @@
       <br>
       <button>{{ $t('login-btn') }}</button>
       <br><br>
+      <router-link to="/forgot">Forgot password</router-link>
     </v-form>
     <h2>{{ $t('or') }}</h2>
     <button @click="oauth2('42')">
