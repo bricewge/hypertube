@@ -2,10 +2,10 @@
   <div class="usr-cntnr">
     <!-- TODO Handle where there is no image set -->
     <img v-bind:src='user.image_url'>
-    <p>{{ $auth.user().firstname }} {{ $auth.user().name }}</p>
-    <p>{{ $auth.user().login }}</p>
+    <p>{{ user.firstname }} {{ user.name }}</p>
+    <p>{{ user.login }}</p>
     <!-- <p>{{ user.age }}</p> -->
-    <p>{{ $auth.user().email }}</p>
+    <p>{{ user.email }}</p>
     <p>password</p>
   </div>
 </template>
@@ -26,6 +26,11 @@ export default {
         password: '*********'
       }
     }
+  },
+
+  async mounted () {
+    const response = await this.axios.get(`/users/${this.$route.params.login}` )
+    this.user = response.data
   }
 }
 </script>

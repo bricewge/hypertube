@@ -14,7 +14,7 @@ module.exports = (app, passport) => {
     AuthenticationController.login)
   app.get('/auth/user',
     AuthenticationController.authenticated,
-    UsersController.show)
+    UsersController.self)
 
   app.get('/auth/facebook',
     passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))
@@ -41,6 +41,9 @@ module.exports = (app, passport) => {
   app.get('/movies/:movieId/comments',
     AuthenticationController.authenticated,
     CommentsController.show)
+  app.get('/users/:login',
+    AuthenticationController.authenticated,
+    UsersController.show)
   app.post('/comments',
     AuthenticationController.authenticated,
     CommentsController.post)

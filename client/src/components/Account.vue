@@ -1,30 +1,97 @@
 <template>
-  <div class="usr-cntnr">
-    <!-- TODO Handle where there is no image set -->
-    <img v-bind:src='user.image_url'>
-    <p>{{ $auth.user().firstname }} {{ $auth.user().name }}</p>
-    <p>{{ $auth.user().login }}</p>
-    <!-- <p>{{ user.age }}</p> -->
-    <p>{{ $auth.user().email }}</p>
-    <p>password</p>
-  </div>
+<v-container fluid fill-height>
+  <v-layout row wrap>
+    <v-flex xs12 sm10 md8>
+      <!-- <div class="usr-cntnr"> -->
+      <!--   <img v-bind:src='$auth.user().image_url'> -->
+      <!-- </div> -->
+      <v-form
+        v-model="valid"
+        ref="form"
+        @submit.prevent="submit"
+        lazy-validation>
+        <v-text-field
+          name="firstName"
+          v-model="user.firstName"
+          :placeholder="$t('firstname')"/>
+        <v-text-field
+          name="name"
+          type="name"
+          v-model="user.name"
+          :placeholder="$t('name')"/>
+        <v-text-field
+          name="login"
+          v-model="user.login"
+          :placeholder="$t('login')"/>
+        <v-text-field
+          name="email"
+          type="email"
+          :rules="emailRules"
+          v-model="user.email"
+          :placeholder="$t('email')"/>
+        <v-text-field
+          name="password"
+          type="password"
+          :rules="passwordRules"
+          v-model="user.password"
+          :placeholder="$t('password')"/>
+       <input
+          name="image"
+          type="file"
+          accept="image/png,image/jpeg"
+          @change="onFilePicked"
+          placeholder="Image"/>
+        <v-btn
+          type="submit"
+          color="primary"
+          >Update</v-btn>
+      </v-form>
+    </v-flex>
+  </v-layout>
+</v-container>
 </template>
 
 <script>
-// GET current user informations or user informations based on his ID
-// TODO Use a form  to modify user data
+import {validPassword, validEmail} from '@/util/validation'
+
 export default {
   data () {
     return {
       user: {
-        name: 'Dwayne',
-        firstname: 'Johnson',
-        login: 'Dwayni-du-9-2',
-        age: '18',
-        email: 'dwayne.johnson@gmail.com',
-        image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_ROCK.jpg/170px-The_ROCK.jpg',
-        password: '*********'
+        firstName: '',
+        name: '',
+        login: '',
+        email: '',
+        password: '',
+        image: null
+      },
+      form: new FormData(),
+      emailRules: [ validEmail ],
+      passwordRules: [ validPassword ],
+      valid: true
+    }
+  },
+
+  methods: {
+    onFilePicked ($event) {
+      if ($event.target.files.length) {
+        this.user.image = $event.target.files[0]
       }
+    },
+
+    submit () {
+      if (!this.$refs.form.validate()) return
+      for (let key in this.user) {
+        if (this.user[key]) this.form.set(key, this.user[key])
+        else this.form.delete(key)
+      }
+      // for(const pair of this.form.entries()) {
+      //   console.log(pair[0]+ ', '+ pair[1]);
+      // }
+      // if (!data.length) return
+      const config = {headers: {'content-type': 'multipart/form-data'}}
+      this.axios.patch('/auth/account', this.form, config)
+      this.$auth.fetch() // Get new account settings
     }
   }
 }
@@ -33,20 +100,20 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/application';
 .usr-cntnr{
-  padding-top: 3em;
+    padding-top: 3em;
 }
 
 .usr-cntnr img{
-  width: 20em;
-  height: 20em;
-  border-radius: 50%;
+    width: 20em;
+    height: 20em;
+    border-radius: 50%;
 }
 
 .usr-cntnr p{
-  margin: .3em;
-  font-weight: 500;
-  font-size: 1.2em;
-  opacity: .8;
-  color: $white;
+    margin: .3em;
+    font-weight: 500;
+    font-size: 1.2em;
+    opacity: .8;
+    color: $white;
 }
 </style>

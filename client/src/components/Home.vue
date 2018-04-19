@@ -202,6 +202,10 @@ export default {
       this.loading = true
       const response = await this.axios.get('/movies', {params: {q: this.search}})
       this.movies = response.data
+      this.sortBy(this.sorts[0]) // Sort by title
+      this.sort = 'Title'
+      this.pagination.descending = false
+      this.sortIcon = 'arrow_upward'
       this.loading = false
     }
   }

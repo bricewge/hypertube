@@ -13,10 +13,11 @@ module.exports = {
       })
     }
   },
-  async show (req, res) {
+
+  async self (req, res) {
     try {
       const user = await User.findOne({
-        where: {email: req.email},
+        where: { email: req.email },
         attributes: ['login', 'email', 'name', 'firstname', 'language', 'image_url']
       })
       res.status(200).send({data: user.dataValues})
@@ -26,6 +27,21 @@ module.exports = {
       })
     }
   },
+
+  async show (req, res) {
+    try {
+      const user = await User.findOne({
+        where: {login: req.params.login},
+        attributes: ['login', 'email', 'name', 'firstname', 'language', 'image_url']
+      })
+      res.status(200).send(user.dataValues)
+    } catch (err) {
+      res.status(500).send({
+        error: 'An error occured trying to fetch the user'
+      })
+    }
+  },
+
   async post (req, res) {
     try {
       const user = await User.create(req.body)
