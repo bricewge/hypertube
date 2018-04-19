@@ -60,7 +60,7 @@ module.exports = {
         }]
       }]
     })
-    /*  if (!movie.file_path) {
+    if (!movie.file_path) {
         // TODO Write getMagnetLink
         // let magnetLink = getMagnetLink(req.params.movieId)
         let magnetLink = hashes[0]
@@ -70,9 +70,9 @@ module.exports = {
         )
         engine.once('ready', () => onEngineReady(engine, res))
         engine.once('idle', () => onEngineIdle(engine))
-      } else {*/
+      } else {
         res.status(200).send(movie)
-      //}
+      }
     } catch (err) {
       console.log(err)
       res.status(499).send({
