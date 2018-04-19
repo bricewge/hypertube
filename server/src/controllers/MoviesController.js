@@ -95,11 +95,11 @@ function onEngineReady (engine, res) {
   debug(`selected file ${res.file.name} for ${engine.infoHash}`)
   res.file.path.full = path.join(config.storage, engine.infoHash + '.m3u8')
   let stream = res.file.createReadStream()
-  transcode(stream, res.file.path.full)
-  setTimeout(() => {
+  transcode(stream, res.file.path.full, )
+  /*setTimeout(() => {
     res.status(200).send({url: '/streams/' + engine.infoHash + '.m3u8'})
   },
-             10 * 1000) // 10 sec
+             10 * 1000) // 10 sec*/
   // next()
   // TODO transcode
   // TODO Mybe wait for transcode to output the first file

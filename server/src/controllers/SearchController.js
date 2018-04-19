@@ -2,7 +2,7 @@ let request = require('request');
 let cheerio = require('cheerio');
 //let jsonframe = require('jsonframe-cheerio')
 
-const {Movie} = require('../models')
+const {Movie, Torrent} = require('../models')
 
 function search_content($content, search, text)
 {
@@ -84,14 +84,14 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 				//cover_url: cover_img,
 				image_url:cover_img,
 				director: d,
-				//producer : p,
+				producer : p,
 				casting: c,
 				rating: $x('#title-overview-widget > div.vital > div.title_block > div > div.ratings_wrapper > div.imdbRating > div.ratingValue > strong > span').text(),
 				time: $x('#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div > time').text().trim(),
 				summary: $x('#titleStoryLine > div:nth-child(3) > p').text().trim(),
 				//tags: $x('#titleStoryLine > div:nth-child(8) > a').text().trim().split(" "),
 				//date: dates,
-				//year_of_production: yofprod,
+				year: yofprod,
 			});
 
 		}
@@ -113,13 +113,22 @@ function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 		var imdb_id = search_imdb_id_content(rrr);
 		var texted = search_next_content($x, "#details > dl > dt", "Texted language(s)");
 		var hash = get_hash(cheerio.load(rrr));
-		callback({
+		res = {
 			magnet: link,
 			lang: lang,
 			imdb_id: imdb_id,
 			text_lang: texted,
 			hash: hash,
+		}
+		if (res["hash"] == undefined)
+		{
+			callback(undefined);
+			return ;
+		}
+		Torrent.create(res).catch(function(err) {
+			console.log(res["hash"] + " already exist.")
 		});
+		callback(res);
 	});
 }
 
@@ -146,6 +155,7 @@ search_best_movie_pirate_bay(callback){
         });
     });
 },
+
 search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
     res = 0;
     lst = []
@@ -163,6 +173,15 @@ search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
             });
         }
         Promise.all(lst).then(function(values) {
+			for (var i = 0; i < values.length; i++) {
+				v = values[i];
+				if (v && v["hash"])
+				{
+					Torrent.create(v).catch(function(err) {
+						console.log(v["hash"] + " already exist.")
+					});
+				}
+			}
             callback(values);
         });
     });
@@ -177,13 +196,22 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
 		var movie = tmp["data"]["movies"] ? tmp["data"]["movies"][0] : undefined;
 		if (movie != undefined)
 		{
-			callback({
+			res = {
 				magnet: undefined,
 				lang: movie["language"],
 				imdb_id: movie["imdb_code"],
 				text_lang: "",
 				hash: movie["torrents"][0] ? movie["torrents"][0]['hash'] : undefined,
+			}
+			if (res["hash"] == undefined)
+			{
+				callback(undefined);
+				return ;
+			}
+			Torrent.create(res).catch(function(err) {
+				console.log(res["hash"] + " already exist.")
 			});
+			callback(res);
 		}
 		else
 			callback(undefined);
@@ -205,15 +233,22 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
                     }));
                 });
                 Promise.all(lst).then(function(values) {
+					if (e && e["imdb_id"])
+					{
+						Movie.create(err).catch(function(err) {
+							console.log(e["imdb_id"] + " already exist.")
+						});
+					}
                     callback(values);
                 });
             }
         });
     },
 
-    search_imdb_movie(film, callback){
+    search_movie(film, callback){
         request('http://www.imdb.com/find?q='+ encodeURI(film) + '&s=tt&ttype=ft&ref_=fn_ft', function(err, resp, html) {
             if (!err) {
+				//console.log(html)
                 lst = []
                 const $ = cheerio.load(html);
                 $('#main > div > div.findSection > table > tbody > tr > td.result_text > a').each(function(i, html) {
@@ -223,13 +258,17 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
                     }));
                 });
                 Promise.all(lst).then(function(values) {
-/*                    values.forEach(e => {
-                        if (e != undefined)
-                            Movie.create(e);
-                    });*/
+                    values.forEach(e => {
+                        if (e && e["imdb_id"])
+                        {
+                            Movie.create(e).catch(function(err) {
+                                console.log(e["imdb_id"] + " already exist.")
+                            });
+                        }
+                    });
                     callback(values);
                 });
-            }
+            } else {console.log(err)}
         });
     }
 }

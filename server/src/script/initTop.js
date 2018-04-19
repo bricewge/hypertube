@@ -3,7 +3,7 @@ const {sequelize, Movie} = require('../models')
 
 sequelize.sync()
   .then(() => {
-    Search.search_movie_yts_byimdb_id("tt1663662",
+    Search.search_best_movie_pirate_bay(
         async (values) => {
 			console.log(values);
             //for (var i = 0; i < values.length; i++)

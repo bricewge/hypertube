@@ -8,7 +8,8 @@
   "scripts": {
     "start": "./node_modules/nodemon/bin/nodemon.js src/app.js --exec 'npm run lint && node'",
     "lint": "./node_modules/.bin/eslint **/*.js",
-    "init": "./node_modules/.bin/sequelize db:create --config src/config/db.js && node ./src/script/initTop.js"
+    "init": "./node_modules/.bin/sequelize db:create --config src/config/db.js && node ./src/script/initTop.js",
+	"test": "node ./src/script/tester.js"
   },
   "keywords": [],
   "license": "ISC",
