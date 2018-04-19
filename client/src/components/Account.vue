@@ -2,9 +2,9 @@
 <v-container fluid fill-height>
   <v-layout row wrap>
     <v-flex xs12 sm10 md8>
-      <!-- <div class="usr-cntnr"> -->
-      <!--   <img v-bind:src='$auth.user().image_url'> -->
-      <!-- </div> -->
+      <div class="usr-cntnr">
+        <img :src="$auth.user().image_url">
+      </div>
       <v-form
         v-model="valid"
         ref="form"
@@ -12,7 +12,7 @@
         lazy-validation>
         <v-text-field
           name="firstName"
-          v-model="user.firstName"
+          v-model="user.firstname"
           :placeholder="$t('firstname')"/>
         <v-text-field
           name="name"
@@ -58,10 +58,10 @@ export default {
   data () {
     return {
       user: {
-        firstName: '',
-        name: '',
-        login: '',
-        email: '',
+        firstname: this.$auth.user().firstname,
+        name: this.$auth.user().name,
+        login: this.$auth.user().login,
+        email: this.$auth.user().email,
         password: '',
         image: null
       },
@@ -79,7 +79,7 @@ export default {
       }
     },
 
-    submit () {
+    async submit () {
       if (!this.$refs.form.validate()) return
       for (let key in this.user) {
         if (this.user[key]) this.form.set(key, this.user[key])
@@ -90,8 +90,8 @@ export default {
       // }
       // if (!data.length) return
       const config = {headers: {'content-type': 'multipart/form-data'}}
-      this.axios.patch('/auth/account', this.form, config)
-      this.$auth.fetch() // Get new account settings
+      await this.axios.put('/account', this.form, config)
+      await this.$auth.fetch() // Get new account settings
     }
   }
 }

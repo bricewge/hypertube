@@ -5,6 +5,7 @@ const config = require('../config/config')
 const nodemailer = require('nodemailer')
 const Promise = require('bluebird')
 const crypto = Promise.promisifyAll(require('crypto'))
+const url = require('url')
 const transporter = nodemailer.createTransport({
   sendmail: true,
   ignoreTLS: true
@@ -13,7 +14,7 @@ const transporter = nodemailer.createTransport({
 function jwtSignUser (user) {
   return jwt.sign(
     // NOTE Do we always have thoses values set in all oauth methods??
-    { login: user.login, email: user.email },
+    { login: user.login, email: user.email, id: user.id },
     config.authentication.jwtSecret,
     {expiresIn: '30d'}
   )
@@ -27,14 +28,23 @@ module.exports = {
       name: Joi.string().alphanum(),
       firstname: Joi.string().alphanum(),
       login: Joi.string().alphanum(),
-      image: Joi.any().optional() // TODO Verify image
+      image: Joi.object({ pipe: Joi.func() }).unknown()
     })},
     {presence: 'required'}),
 
   async register (req, res) {
-    // console.log(req)
     try {
-      const user = await User.create(req.body)
+      let values = {}
+      for (let key in req.body) {
+        if (req.body[key]) values[key] = req.body[key]
+      }
+      if (req.file) {
+        const referer = new url.URL(req.headers.referer)
+        referer.port = 8081
+        values.image_url = url.resolve(referer.origin, req.file.path)
+      }
+
+      const user = await User.create(values)
       const userJson = user.toJSON()
       res.send({
         user: userJson,
@@ -50,6 +60,7 @@ module.exports = {
   // TODO Write valdiator
   async login (req, res) {
     try {
+      console.log(req.body, req.user)
       let user
       if (!req.user) {
         const {email, password} = req.body
@@ -63,12 +74,11 @@ module.exports = {
         if (!await user.comparePassword(password)) throw new Error()
         res.setHeader('Authorization', jwtSignUser(user))
         res.sendStatus(201)
+      // This is when used with OAuth2
       } else {
-        // console.log(req.user)
         user = req.user
         res.redirect('http://localhost:8080/login?tkn=' + jwtSignUser(user))
       }
-
     } catch (err) {
       // console.log(err)
       res.status(400).send({
@@ -87,6 +97,7 @@ module.exports = {
       const decoded = jwt.verify(token, config.authentication.jwtSecret)
       req.email = decoded.email
       req.login = decoded.login
+      req.id = decoded.id
       next()
     } catch (err) {
       // console.log(err)

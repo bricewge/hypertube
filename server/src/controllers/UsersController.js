@@ -1,4 +1,7 @@
 const {User} = require('../models')
+const { celebrate, Joi } = require('celebrate')
+const fs = require('fs')
+const url = require('url')
 
 module.exports = {
   async index (req, res) {
@@ -39,6 +42,38 @@ module.exports = {
       res.status(500).send({
         error: 'An error occured trying to fetch the user'
       })
+    }
+  },
+
+  validateUpdate: celebrate(
+    {body: Joi.object().keys({
+      email: Joi.string().email(),
+      password: Joi.string().min(8),
+      name: Joi.string().alphanum(),
+      firstname: Joi.string().alphanum(),
+      login: Joi.string().alphanum(),
+      image: Joi.object({ pipe: Joi.func() }).unknown()
+    })}),
+
+  async update (req, res, next) {
+    try {
+      console.log(req.body)
+      let values = {}
+      for (let key in req.body) {
+        if (req.body[key]) values[key] = req.body[key]
+      }
+      if (req.file) {
+        const referer = new url.URL(req.headers.referer)
+        referer.port = 8081
+        values.image_url = url.resolve(referer.origin, req.file.path)
+      }
+      const query = {where: {id: req.id}}
+      await User.update(values, query)
+      console.log(values, req.file)
+      res.sendStatus(201)
+    } catch (err) {
+      fs.unlinkSync(req.file.path)
+      next(err)
     }
   },
 

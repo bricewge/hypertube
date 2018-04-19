@@ -5,9 +5,11 @@ const CommentsController = require('./controllers/CommentsController')
 const SubtitlesController = require('./controllers/SubtitlesController')
 const ViewsController = require('./controllers/ViewsController')
 const StreamController = require('./controllers/StreamController')
+const UploadController = require('./controllers/UploadController')
 
 module.exports = (app, passport) => {
   app.post('/auth/register',
+    UploadController.single('image'),
     AuthenticationController.validateRegister,
     AuthenticationController.register)
   app.post('/auth/login',
@@ -38,6 +40,11 @@ module.exports = (app, passport) => {
     passport.authenticate('42', { session: false }),
     AuthenticationController.login)
 
+  app.put('/account',
+    AuthenticationController.authenticated,
+    UploadController.single('image'),
+    UsersController.validateUpdate,
+    UsersController.update)
   app.get('/movies',
     AuthenticationController.authenticated,
     MoviesController.index)
