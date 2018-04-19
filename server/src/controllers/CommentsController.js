@@ -58,9 +58,15 @@ module.exports = {
         MovieId: parseInt(req.body.movie_id)
       })
       try {
+<<<<<<< HEAD
         const user = await User.findById(req.body.UserId)
         try {
           const movie = await Movie.findById(req.body.MovieId)
+=======
+        const user = await User.findById(req.body.user_id)
+        try {
+          const movie = await Movie.findById(req.body.movie_id)
+>>>>>>> d84b9088b17864670c56d08fa7f953d00341207d
           const res = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
