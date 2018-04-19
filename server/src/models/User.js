@@ -50,7 +50,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   User.associate = function (models) {
-    User.hasMany(models.Comment, {as: 'Comment'})
+    User.hasMany(models.Comment)
+    User.hasMany(models.View)
   }
 
   return User

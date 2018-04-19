@@ -6,7 +6,7 @@ const config = require('../config/config')
 function jwtSignUser (user) {
   return jwt.sign(
     // NOTE Do we always have thoses values set in all oauth methods??
-    { login: user.login, email: user.email },
+    { login: user.login, email: user.email, id: user.id },
     config.authentication.jwtSecret,
     {expiresIn: '30d'}
   )
@@ -80,6 +80,7 @@ module.exports = {
       const decoded = jwt.verify(token, config.authentication.jwtSecret)
       req.email = decoded.email
       req.login = decoded.login
+      req.id = decoded.id
       next()
     } catch (err) {
       // console.log(err)

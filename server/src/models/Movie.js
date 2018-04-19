@@ -14,5 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     file_path: DataTypes.STRING
   })
 
+  Movie.associate = function (models) {
+    Movie.hasMany(models.Comment)
+    Movie.hasMany(models.View)
+  }
+
   return Movie
 }

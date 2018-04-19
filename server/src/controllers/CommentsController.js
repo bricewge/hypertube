@@ -11,7 +11,7 @@ module.exports = {
       })
       res.status(200).send(comments)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the comments'
       })
     }
@@ -37,15 +37,15 @@ module.exports = {
       res.status(200).send(comments)
     } catch (err) {
       console.log(err)
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the comment'
       })
     }
   },
   validatePostComments: celebrate({
     body: Joi.object().keys({
-      UserId: Joi.number().integer(),
-      MovieId: Joi.number().integer(),
+      user_id: Joi.number().integer(),
+      movie_id: Joi.number().integer(),
       content: Joi.string().min(2).alphanum()
     })
   }),
@@ -57,20 +57,15 @@ module.exports = {
         content: req.body.content,
         MovieId: parseInt(req.body.movie_id)
       })
+      console.log(comments)
       try {
-<<<<<<< HEAD
-        const user = await User.findById(req.body.UserId)
-        try {
-          const movie = await Movie.findById(req.body.MovieId)
-=======
         const user = await User.findById(req.body.user_id)
         try {
           const movie = await Movie.findById(req.body.movie_id)
->>>>>>> d84b9088b17864670c56d08fa7f953d00341207d
-          const res = {
+          const result = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
-            content: req.query.content,
+            content: req.body.content,
             user: {
               login: user.login,
               id: user.id,
@@ -90,20 +85,23 @@ module.exports = {
               rating: movie.rating
             }
           }
-          console.log(res)
-          res.send(res)
+          console.log(result)
+          res.send(result)
         } catch (err) {
-          res.status(500).send({
+          console.log(err)
+          res.status(499).send({
             error: 'An error has occured trying to get the movie'
           })
         }
       } catch (err) {
-        res.status(500).send({
+        console.log(err)
+        res.status(499).send({
           error: 'An error has occured trying to get the user'
         })
       }
     } catch (err) {
-      res.status(500).send({
+      console.log(err)
+      res.status(499).send({
         error: 'An error has occured trying to create the comment'
       })
     }
