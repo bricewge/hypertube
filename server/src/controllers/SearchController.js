@@ -2,7 +2,7 @@ let request = require('request');
 let cheerio = require('cheerio');
 //let jsonframe = require('jsonframe-cheerio')
 
-const {Movie} = require('../models')
+const {Movie, Torrent} = require('../models')
 
 function search_content($content, search, text)
 {
@@ -84,16 +84,18 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 				//cover_url: cover_img,
 				image_url:cover_img,
 				director: d,
-				//producer : p,
+				producer : p,
 				casting: c,
 				rating: $x('#title-overview-widget > div.vital > div.title_block > div > div.ratings_wrapper > div.imdbRating > div.ratingValue > strong > span').text(),
 				time: $x('#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div > time').text().trim(),
 				summary: $x('#titleStoryLine > div:nth-child(3) > p').text().trim(),
 				//tags: $x('#titleStoryLine > div:nth-child(8) > a').text().trim().split(" "),
 				//date: dates,
-				//year_of_production: yofprod,
+				year: yofprod,
 			});
-
+			return ;
+		} else{
+			console.log(err);
 		}
 		callback(undefined);
 	});
@@ -101,7 +103,7 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 
 function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 {
-	request("https://thepiratebay.org" + endpoint, function(error, rep, rrr) {
+	request("https://thepiratebay.org" + endpoint, async function(error, rep, rrr) {
 		if (error)
 		{
 			console.log(error)
@@ -113,21 +115,29 @@ function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 		var imdb_id = search_imdb_id_content(rrr);
 		var texted = search_next_content($x, "#details > dl > dt", "Texted language(s)");
 		var hash = get_hash(cheerio.load(rrr));
-		callback({
+		res = {
 			magnet: link,
 			lang: lang,
 			imdb_id: imdb_id,
 			text_lang: texted,
 			hash: hash,
+		}
+		if (res["hash"] == undefined)
+		{
+			callback(undefined);
+			return ;
+		}
+		await Torrent.create(res).catch(function(err) {
+			console.log(res["hash"] + " already exist.")
 		});
+		callback(res);
 	});
 }
 
 module.exports = {
 
 search_best_movie_pirate_bay(callback){
-    res = 0;
-    lst = []
+    var lst = []
     request('https://thepiratebay.org/top/201', function(err, resp, html) {
         if (err)
             console.log(err)
@@ -146,9 +156,9 @@ search_best_movie_pirate_bay(callback){
         });
     });
 },
+
 search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
-    res = 0;
-    lst = []
+    var lst = []
     request('https://thepiratebay.org/search/' + encodeURI(imdb_id) + '/0/99', function(err, resp, html) {
         if (err)
             console.log(err)
@@ -162,7 +172,16 @@ search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
                 }));
             });
         }
-        Promise.all(lst).then(function(values) {
+        Promise.all(lst).then(async function(values) {
+			for (var i = 0; i < values.length; i++) {
+				v = values[i];
+				if (v && v["hash"])
+				{
+					await Torrent.create(v).catch(function(err) {
+						console.log(v["hash"] + " already exist.")
+					});
+				}
+			}
             callback(values);
         });
     });
@@ -170,20 +189,29 @@ search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
 
 search_movie_yts_by_imdb_id(imdb_id , callback)
 {
-	request('https://yts.am/api/v2/list_movies.json?query_term=' + imdb_id, function(err, resp, html) {
+	request('https://yts.am/api/v2/list_movies.json?query_term=' + imdb_id, async function(err, resp, html) {
 		if (err)
 			callback(err);
 		var tmp = JSON.parse(html);
 		var movie = tmp["data"]["movies"] ? tmp["data"]["movies"][0] : undefined;
 		if (movie != undefined)
 		{
-			callback({
+			res = {
 				magnet: undefined,
 				lang: movie["language"],
 				imdb_id: movie["imdb_code"],
 				text_lang: "",
 				hash: movie["torrents"][0] ? movie["torrents"][0]['hash'] : undefined,
+			}
+			if (res["hash"] == undefined)
+			{
+				callback(undefined);
+				return ;
+			}
+			var t = await Torrent.create(res).catch(function(err) {
+				console.log(res["hash"] + " already exist.")
 			});
+			callback(res);
 		}
 		else
 			callback(undefined);
@@ -191,8 +219,31 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
 	});
 },
 
+search_imdb_data_by_imdb_id_list(imdb_ids, callback){
+	var lst = []
+	for (var i = 0; i < imdb_ids.length; i++) {
+		let imdbId = imdb_ids[i];
+		lst.push(new Promise(function(resolve, reject) {
+			search_imbd_movie_by_imdb_id(imdbId, (e) => {resolve(e);});
+		}));
+	}
+	Promise.all(lst).then(async function(values) {
+		for (var i = 0; i < values.length; i++) {
+			e = values[i]
+			if (e && e["imdb_id"])
+			{
+				console.log(e);
+				var t = await Movie.create(e).catch(function(err) {
+					console.log(e["imdb_id"] + " already exist.")
+				});
+			}
+		};
+		callback(values);
+	});
+},
+
     search_best_movie_imdb(callback){
-        lst = []
+        var lst = []
         request('http://www.imdb.com/chart/top?sort=rk,asc&mode=simple&page=1', function(err, resp, html) {
             if (!err) {
                 const $ = cheerio.load(html);
@@ -204,17 +255,33 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
                         search_imbd_movie_by_imdb_id(imdbId, (e) => resolve(e));
                     }));
                 });
-                Promise.all(lst).then(function(values) {
+                Promise.all(lst).then(async function(values) {
+					if (e && e["imdb_id"])
+					{
+						await Movie.create(err).catch(function(err) {
+							console.log(e["imdb_id"] + " already exist.")
+						});
+					}
                     callback(values);
                 });
             }
         });
     },
 
-    search_imdb_movie(film, callback){
+	search_torrent_by_imdb_id_list(imdb_ids, callback)
+	{
+		for (var i = 0; i < ibdb_ids.length; i++) {
+			imdb_id = ibdb_ids[i];
+			search_movie_yts_by_imdb_id(imdb_id, () => {});
+			search_movie_pirate_bay_by_imdb_id(imdb_id, () => {});
+		}
+	},
+
+    search_movie(film, callback){
         request('http://www.imdb.com/find?q='+ encodeURI(film) + '&s=tt&ttype=ft&ref_=fn_ft', function(err, resp, html) {
             if (!err) {
-                lst = []
+				//console.log(html)
+                var lst = []
                 const $ = cheerio.load(html);
                 $('#main > div > div.findSection > table > tbody > tr > td.result_text > a').each(function(i, html) {
                     let imdbId = /^\/title\/(tt\d+)\//.exec($(html).attr('href'))[1]
@@ -222,14 +289,19 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
                         search_imbd_movie_by_imdb_id(imdbId, (e) => resolve(e));
                     }));
                 });
-                Promise.all(lst).then(function(values) {
-/*                    values.forEach(e => {
-                        if (e != undefined)
-                            Movie.create(e);
-                    });*/
+                Promise.all(lst).then(async function(values) {
+					for (var i = 0; i < values.length; i++) {
+						e = values[i];
+                        if (e && e["imdb_id"])
+                        {
+                            await Movie.create(e).catch(function(err) {
+                                console.log(e["imdb_id"] + " already exist.")
+                            });
+                        }
+                    }
                     callback(values);
                 });
-            }
+            } else {console.log(err); callback([])}
         });
     }
 }

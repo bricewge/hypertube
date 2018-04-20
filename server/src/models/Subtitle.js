@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   })
   Subtitle.associate = function (models) {
-    Subtitle.belongTo(models.Movie)
+    Subtitle.belongsTo(models.Movie)
   }
   return Subtitle
 }

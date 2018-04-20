@@ -56,7 +56,7 @@ module.exports = {
               content: movie.content,
               image_url: movie.image_url,
               summary: movie.summary,
-              year_of_production: movie.year_of_production,
+              year_of_production: movie.year,
               director: movie.director,
               producer: movie.producer,
               casting: movie.casting,
