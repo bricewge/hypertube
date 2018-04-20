@@ -18,14 +18,14 @@ module.exports = {
   },
   validateShowComments: celebrate({
     params: Joi.object().keys({
-      movieId: Joi.number().integer()
+      MovieImdbId: Joi.number().integer()
     })
   }
   ),
   async show (req, res) {
     try {
       const comments = await Comment.findAll({
-        where: {MovieId: req.params.movieId},
+        where: {MovieImdbId: req.params.MovieImdbId},
         include: [{
           model: User,
           through: {
@@ -55,7 +55,7 @@ module.exports = {
       const comments = await Comment.create({
         UserId: parseInt(req.id),
         content: req.body.content,
-        MovieId: parseInt(req.body.movie_id)
+        MovieImdbId: parseInt(req.body.movie_id)
       })
       console.log(comments)
       try {

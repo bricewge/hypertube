@@ -48,10 +48,10 @@ module.exports = (app, passport) => {
   app.get('/movies',
     // AuthenticationController.authenticated,
     MoviesController.index)
-  app.get('/movies/:movieId',
+  app.get('/movies/:MovieImdbId',
     // AuthenticationController.authenticated,
     MoviesController.show)
-  app.get('/movies/:movieId/comments',
+  app.get('/movies/:MovieImdbId/comments',
     AuthenticationController.authenticated,
     CommentsController.show)
   app.get('/users/:login',
@@ -61,13 +61,13 @@ module.exports = (app, passport) => {
     AuthenticationController.authenticated,
     CommentsController.validatePostComments,
     CommentsController.post)
-  app.get('/movies/:movieId/subtitles',
+  app.get('/movies/:MovieImdbId/subtitles',
     AuthenticationController.authenticated,
     SubtitlesController.show)
-  app.get('/movies/:movieId/views',
+  app.get('/movies/:MovieImdbId/views',
     AuthenticationController.authenticated,
     ViewsController.show)
-  app.get('/streams/:movieId',
+  app.get('/streams/:MovieImdbId',
     AuthenticationController.authenticated,
     StreamController.show)
 }

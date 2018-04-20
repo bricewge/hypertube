@@ -15,7 +15,7 @@ module.exports = {
   },
   async show (req, res) {
     try {
-      const views = await View.findAll({where: {movie_id: req.params.movieId}})
+      const views = await View.findAll({where: {movie_id: req.params.MovieImdbId}})
       res.status(200).send(views)
     } catch (err) {
       res.status(500).send({

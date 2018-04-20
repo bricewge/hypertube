@@ -3,33 +3,34 @@ module.exports = (sequelize, DataTypes) => {
     imdb_id: {
       type: DataTypes.STRING,
       unique: true,
-	  allowNull: false,
+      allowNull: false,
+      primaryKey: true
     },
     title: {
       type: DataTypes.STRING,
-	  allowNull: false,
+      allowNull: false
     },
-	content: {
-      type: DataTypes.STRING,
+    content: {
+      type: DataTypes.STRING
     },
     image_url: {
       type: DataTypes.STRING,
-	  allowNull: false,
+      allowNull: false
     },
     summary: DataTypes.TEXT,
     year: {
       type: DataTypes.STRING,
-	  allowNull: false,
+      allowNull: false
     },
     director: DataTypes.STRING,
     producer: DataTypes.STRING,
     casting: DataTypes.STRING,
-    //duration_in_min: DataTypes.STRING,
+    // duration_in_min: DataTypes.STRING,
     rating: {
       type: DataTypes.STRING,
-	  allowNull: false,
-    },
-    //file_path: DataTypes.STRING
+      allowNull: false
+    }
+    // file_path: DataTypes.STRING
   })
 
   Movie.associate = function (models) {

@@ -15,7 +15,7 @@ module.exports = {
   },
   async show (req, res) {
     try {
-      const subtitles = await Subtitle.findAll({where: {movie_id: req.params.movieId}})
+      const subtitles = await Subtitle.findAll({where: {movie_id: req.params.MovieImdbId}})
       res.status(200).send(subtitles)
     } catch (err) {
       res.status(500).send({
