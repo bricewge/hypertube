@@ -2,7 +2,7 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const debug = require('debug')('movie')
 const path = require('path')
-const {Movie, Torrent} = require('../models')
+const {Movie, Torrent, User, Comment} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
 const Op = Sequelize.Op;
@@ -19,12 +19,12 @@ let torrents = {}
 module.exports = {
   async index (req, res) {
     try {
-      if (req.query.q){
+      if (req.query.q) {
         const movies = await Movie.findAll({
           limit: parseInt(req.query.limit) || 50,
           where: {
             title: {
-              [Op.like]: "%"+req.query.q+"%"
+              [Op.like]: "%" + req.query.q + "%"
             }
           }})
           if (movies.length == 0)
@@ -46,17 +46,20 @@ module.exports = {
 			}, req.query.q)
           else
             res.send(movies);
+        if (movies.length == 0)
+          Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q)
+        else
+          res.send(movies)
       }
       else {
         const movies = await Movie.findAll({
-          limit: parseInt(req.query.limit) || 50,
-        });
-        res.send(movies);
+          limit: parseInt(req.query.limit) || 50
+        })
+        res.send(movies)
       }
-
     } catch (err) {
       console.log(err);
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the movies'
       })
     }
@@ -67,7 +70,16 @@ module.exports = {
   async show (req, res) {
     try {
       if (!req.params.movieId) throw new Error()
-      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}})
+      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}, include: [{
+        model: Comment,
+        attributes: ['content'],
+        include: [{
+          model: User,
+          attributes: ['login']
+        }]
+      }]
+                                      })
+      res.movie = movie
       let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
 	  console.log(torrent);
       if (torrent && !torrent.file_path) {
@@ -84,8 +96,8 @@ module.exports = {
         res.status(200).send(movie)
 	}
     } catch (err) {
-		console.log(err);
-      res.status(500).send({
+      console.log(err)
+      res.status(499).send({
         error: 'An error occured trying to fetch the movie'
       })
     }
@@ -115,8 +127,8 @@ function onEngineReady (engine, res, torrent) {
   let stream = res.file.createReadStream()
   transcode(stream, res.file.path.full, res)
   torrent.updateAttributes({
-      file_path: res.file.path.full
-  });
+    file_path: res.file.path.full
+  })
   // next()
   // TODO transcode
   // TODO Mybe wait for transcode to output the first file | ?
@@ -129,7 +141,7 @@ function onEngineIdle (engine) {
   setTimeout(() => {
     engine.destroy()
   },
-             15 * day) // NOTE Over 23 days it overflow
+  15 * day) // NOTE Over 23 days it overflow
 }
 
 function transcode (streamIn, file, res) {
@@ -154,7 +166,9 @@ function transcode (streamIn, file, res) {
 		  if (!this.is_send)
 		  	console.log(progress.timemark + " | " + timer);
 		  if(timer >= 2 && !this.is_send){
-			  res.status(200).send({url: '/streams/' + res.engine.infoHash + '.m3u8'});
+        res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
+        console.log(res.movie)
+			  res.status(200).send(res.movie)
 			  this.is_send = true;
 		  }
 	  })

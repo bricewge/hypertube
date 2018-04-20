@@ -1,6 +1,7 @@
 const {Comment} = require('../models')
 const {User} = require('../models')
 const {Movie} = require('../models')
+const { celebrate, Joi, errors } = require('celebrate')
 
 module.exports = {
   async index (req, res) {
@@ -10,41 +11,61 @@ module.exports = {
       })
       res.status(200).send(comments)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the comments'
       })
     }
   },
+  validateShowComments: celebrate({
+    params: Joi.object().keys({
+      movieId: Joi.number().integer()
+    })
+  }
+  ),
   async show (req, res) {
     try {
-      const comments = await Comment.findAll({where: {movie_id: req.params.movieId}})
+      const comments = await Comment.findAll({
+        where: {MovieId: req.params.movieId},
+        include: [{
+          model: User,
+          through: {
+            attribute: ['login']
+          }
+        }]
+      })
       console.log(comments)
       res.status(200).send(comments)
     } catch (err) {
-      res.status(500).send({
+      console.log(err)
+      res.status(499).send({
         error: 'An error occured trying to fetch the comment'
       })
     }
   },
+  validatePostComments: celebrate({
+    body: Joi.object().keys({
+      user_id: Joi.number().integer(),
+      movie_id: Joi.number().integer(),
+      content: Joi.string().min(2).alphanum()
+    })
+  }),
   async post (req, res) {
     console.log(req.body)
     try {
       const comments = await Comment.create({
-        user_id: parseInt(req.body.user_id),
+        UserId: parseInt(req.id),
         content: req.body.content,
-        movie_id: parseInt(req.body.movie_id)
+        MovieId: parseInt(req.body.movie_id)
       })
-      //  console.log(comments)
+      console.log(comments)
       try {
-        const user = await User.findById(req.body.user_id)
-        //  console.log(user)
+        const user = await User.findById(req.id)
         try {
           const movie = await Movie.findById(req.body.movie_id)
-          //  console.log(movie)
-          const res = {
+          const result = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
-            content: req.query.content,
+            content: req.body.content,
             user: {
               login: user.login,
               id: user.id,
@@ -64,20 +85,23 @@ module.exports = {
               rating: movie.rating
             }
           }
-          console.log(res)
-          res.send(res)
+          console.log(result)
+          res.send(result)
         } catch (err) {
-          res.status(500).send({
+          console.log(err)
+          res.status(499).send({
             error: 'An error has occured trying to get the movie'
           })
         }
       } catch (err) {
-        res.status(500).send({
+        console.log(err)
+        res.status(499).send({
           error: 'An error has occured trying to get the user'
         })
       }
     } catch (err) {
-      res.status(500).send({
+      console.log(err)
+      res.status(499).send({
         error: 'An error has occured trying to create the comment'
       })
     }

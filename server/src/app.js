@@ -13,13 +13,13 @@ const app = express()
 app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
-// TODO Write middleware to manage ValidationError from celebration
 
 const uploadPath = path.join(__dirname, '..', config.upload.dest)
 app.use(url.resolve('/', config.upload.dest), express.static(uploadPath))
 
 require('./routes')(app, passport)
 app.use(errors())
+require('./middlewares/errors')(app)
 sequelize.sync()
   .then(() => {
     app.listen(config.port)

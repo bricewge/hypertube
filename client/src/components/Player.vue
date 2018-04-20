@@ -9,7 +9,11 @@
       </video-player>
     </div>
     <div class="comment-cntnr">
-      <input type="text" name="comment" :placeholder="$t('your-comment')">
+      <input v-model="comment"
+             @keyup.enter="submitComment"
+             type="text"
+             name="comment"
+             :placeholder="$t('your-comment')">
       <div v-for='(comment, index) in comments' v-bind:key='index' class="comment">
         <p>{{ comment.user_name }} - {{ $t('il-y-a') }} {{ comment.created_at }} {{ $t('ago') }}</p>
         <p>{{ comment.content }}</p>
@@ -50,6 +54,7 @@ export default {
           created_at: '3M d\'années'
         }
       ],
+      comment: '',
       playerOptions: {
         // videojs and plugin options
         height: '360',
@@ -83,6 +88,15 @@ export default {
     const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
     // console.log(response)
     this.movie = response.data
+  },
+
+  methods: {
+    async submitComment () {
+      this.axios.post('/comments', {
+        content: this.comment,
+        movie_id: '13'
+      })
+      }
   }
 }
 </script>

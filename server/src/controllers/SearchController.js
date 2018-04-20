@@ -54,8 +54,8 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 			const $x = cheerio.load(html);
 			var img = $x("div.poster > a > img").attr('src'),
 			d = get_credit($x, "Director:") || get_credit($x, "Directors:"),
-			c = get_credit($x, "Star:") || get_credit($x, "Stars:");
-			p = get_credit($x, "Writer:") || get_credit($x, "Writers:");
+			c = get_credit($x, "Star:") || get_credit($x, "Stars:"),
+			p = get_credit($x, "Writer:") || get_credit($x, "Writers:"),
 			dates = search_content($x, '#titleDetails > div', 'Release Date:').split("\n")[0].split(":")[1];
 			var yofprod = undefined
 			var cover_img = undefined
@@ -115,12 +115,12 @@ function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 		var imdb_id = search_imdb_id_content(rrr);
 		var texted = search_next_content($x, "#details > dl > dt", "Texted language(s)");
 		var hash = get_hash(cheerio.load(rrr));
-		res = {
+		let res = {
 			magnet: link,
 			lang: lang,
 			imdb_id: imdb_id,
 			text_lang: texted,
-			hash: hash,
+			hash: hash
 		}
 		if (res["hash"] == undefined)
 		{

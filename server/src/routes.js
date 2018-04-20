@@ -59,6 +59,7 @@ module.exports = (app, passport) => {
     UsersController.show)
   app.post('/comments',
     AuthenticationController.authenticated,
+    CommentsController.validatePostComments,
     CommentsController.post)
   app.get('/movies/:movieId/subtitles',
     AuthenticationController.authenticated,

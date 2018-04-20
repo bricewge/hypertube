@@ -32,8 +32,11 @@ module.exports = (sequelize, DataTypes) => {
     //file_path: DataTypes.STRING
   })
 
- //  Movie.associate = function (models) {
- //   Movie.hasMany(models.Torrent, {as: 'Torrent'})
- // }
+  Movie.associate = function (models) {
+    Movie.hasMany(models.Comment)
+    Movie.hasMany(models.View)
+    //   Movie.hasMany(models.Torrent, {as: 'Torrent'})
+  }
+
   return Movie
 }
