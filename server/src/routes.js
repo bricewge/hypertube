@@ -33,10 +33,10 @@ module.exports = (app, passport) => {
     AuthenticationController.login)
 
   app.get('/movies',
-    AuthenticationController.authenticated,
+    // AuthenticationController.authenticated,
     MoviesController.index)
   app.get('/movies/:movieId',
-    AuthenticationController.authenticated,
+    // AuthenticationController.authenticated,
     MoviesController.show)
   app.get('/movies/:movieId/comments',
     AuthenticationController.authenticated,

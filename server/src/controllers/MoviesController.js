@@ -2,7 +2,7 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const debug = require('debug')('movie')
 const path = require('path')
-const {Movie} = require('../models')
+const {Movie, Torrent} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
 const Op = Sequelize.Op;
@@ -28,7 +28,22 @@ module.exports = {
             }
           }})
           if (movies.length == 0)
-            Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q)
+            Search.search_movie(async get_movies => {
+				res.send(get_movies);
+				for (var i = 0; i < get_movies.length; i++) {
+					var movie = get_movies[i];
+					var lst_movie = []
+					if (!movie || !movie["imdb_id"])
+						continue;
+					let torrent = await Torrent.findOne({where: {imdb_id: movie["imdb_id"]}})
+					if (!torrent)
+					{
+						lst_movie.append(movie["imdb_id"]);
+					}
+					console.log(movies);
+					Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
+				}
+			}, req.query.q)
           else
             res.send(movies);
       }
@@ -53,20 +68,23 @@ module.exports = {
     try {
       if (!req.params.movieId) throw new Error()
       let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}})
-      if (!movie.file_path) {
-        // TODO Write getMagnetLink
-        // let magnetLink = getMagnetLink(req.params.movieId)
-        let magnetLink = hashes[0]
+      let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
+	  console.log(torrent);
+      if (torrent && !torrent.file_path) {
+         //TODO get other than first torrent
+        let magnetLink = torrent.hash//getMagnetLink(req.params.movieId)
+        //let magnetLink = hashes[0]
         const engine = torrentStream(
           magnetLink,
           {tmp: config.storage}
         )
-        engine.once('ready', () => onEngineReady(engine, res))
+        engine.once('ready', () => onEngineReady(engine, res, torrent))
         engine.once('idle', () => onEngineIdle(engine))
-      } else {
+	} else if (torrent) {
         res.status(200).send(movie)
-      }
+	}
     } catch (err) {
+		console.log(err);
       res.status(500).send({
         error: 'An error occured trying to fetch the movie'
       })
@@ -74,7 +92,7 @@ module.exports = {
   }
 }
 
-function onEngineReady (engine, res) {
+function onEngineReady (engine, res, torrent) {
   debug(`start downloading: ${engine.infoHash}`)
   for (let i in engine.files) {
     let file = engine.files[i]
@@ -90,20 +108,19 @@ function onEngineReady (engine, res) {
     if (!res.file || file.length > res.file.length) res.file = file
   }
   // TODO Handle if no movies are found
-  // res.file.engine = engine
+  res.engine = engine
   res.file.select()
   debug(`selected file ${res.file.name} for ${engine.infoHash}`)
   res.file.path.full = path.join(config.storage, engine.infoHash + '.m3u8')
   let stream = res.file.createReadStream()
-  transcode(stream, res.file.path.full, )
-  /*setTimeout(() => {
-    res.status(200).send({url: '/streams/' + engine.infoHash + '.m3u8'})
-  },
-             10 * 1000) // 10 sec*/
+  transcode(stream, res.file.path.full, res)
+  torrent.updateAttributes({
+      file_path: res.file.path.full
+  });
   // next()
   // TODO transcode
-  // TODO Mybe wait for transcode to output the first file
-  // TODO Store in DB
+  // TODO Mybe wait for transcode to output the first file | ?
+  // TODO Store in DB | OK
 }
 
 function onEngineIdle (engine) {
@@ -125,13 +142,22 @@ function transcode (streamIn, file, res) {
     '-preset ultrafast'
   ]
   try {
-    return ffmpeg(streamIn).addOptions(opts)
+    ffmpeg(streamIn).addOptions(opts)
       .format('hls')
       .videoCodec('libx264')
       .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
-      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`); })
+	  .on('progress', (progress) => {
+		  var timer = parseInt(progress.timemark.split(":")[1])
+		  if (!this.is_send)
+		  	console.log(progress.timemark + " | " + timer);
+		  if(timer >= 2 && !this.is_send){
+			  res.status(200).send({url: '/streams/' + res.engine.infoHash + '.m3u8'});
+			  this.is_send = true;
+		  }
+	  })
       .on('end', () => {
         console.log('file has been converted succesfully')
       })
