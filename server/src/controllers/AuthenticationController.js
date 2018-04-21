@@ -27,8 +27,7 @@ module.exports = {
       password: Joi.string().min(8),
       name: Joi.string().alphanum(),
       firstname: Joi.string().alphanum(),
-      login: Joi.string().alphanum(),
-      image: Joi.object({ pipe: Joi.func() }).unknown()
+      login: Joi.string().alphanum()
     })},
     {presence: 'required'}),
 

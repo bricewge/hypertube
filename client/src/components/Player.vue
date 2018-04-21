@@ -36,6 +36,9 @@ export default {
   async mounted () {
     try {
       if (!this.$route.params.imdbId) return
+      let test = await this.axios.post('/views', {MovieImdbId: this.$route.params.imdbId})
+      console.log(test)
+
       const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
       this.comments = response.data.Comments
 

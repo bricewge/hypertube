@@ -4,8 +4,6 @@
     <img v-bind:src='user.image_url'>
     <p>{{ user.firstname }} {{ user.name }}</p>
     <p>{{ user.login }}</p>
-    <!-- <p>{{ user.age }}</p> -->
-    <p>password</p>
   </div>
 </template>
 

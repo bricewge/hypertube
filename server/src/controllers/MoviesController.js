@@ -2,7 +2,7 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const debug = require('debug')('movie')
 const path = require('path')
-const {Movie, Torrent, User, Comment} = require('../models')
+const {Movie, Torrent, User, Comment, View} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
 const Op = Sequelize.Op
@@ -10,19 +10,38 @@ const config = require('../config/config')
 
 let torrents = {}
 
+function clearViews (movies, id) {
+  for (let i in movies) {
+    let views = movies[i].Views
+    for (let j in views) {
+      if (id === views[j].id) {
+        movies[i].dataValues.viewed = true
+        break
+      }
+    }
+    if (!movies[i].dataValues.viewed) movies[i].dataValues.viewed = false
+    delete movies[i].dataValues.Views
+  }
+  return movies
+}
+
 module.exports = {
   async index (req, res) {
     try {
       if (req.query.q) {
-        const movies = await Movie.findAll({
+        let movies = await Movie.findAll({
           limit: parseInt(req.query.limit) || 50,
           where: {
             title: {
               [Op.like]: "%" + req.query.q + "%"
             }
-          }
+          },
+          include: [{
+            model: View
+          }]
         })
-          if (movies.length == 0)
+        movies = clearViews(movies, req.id)
+          if (movies.length === 0)
             Search.search_movie(req.query.q, async get_movies => {
 				res.send(get_movies);
 				for (var i = 0; i < get_movies.length; i++) {
@@ -41,11 +60,15 @@ module.exports = {
 			}, req.query.q)
           else
             res.send(movies);
-      }
-      else {
-        const movies = await Movie.findAll({
-          limit: parseInt(req.query.limit) || 50
+      } else {
+        let movies = await Movie.findAll({
+          limit: parseInt(req.query.limit) || 50,
+          include: [{
+            model: View
+          }]
         })
+        movies = clearViews(movies, req.id)
+        // console.log(movies)
         res.send(movies)
       }
     } catch (err) {

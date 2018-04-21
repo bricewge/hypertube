@@ -54,6 +54,9 @@ module.exports = (app, passport) => {
   app.get('/movies/:movieId/comments',
     AuthenticationController.authenticated,
     CommentsController.show)
+  app.post('/views',
+    AuthenticationController.authenticated,
+    ViewsController.post)
   app.get('/users/:login',
     AuthenticationController.authenticated,
     UsersController.show)
@@ -64,9 +67,9 @@ module.exports = (app, passport) => {
   app.get('/movies/:movieId/subtitles',
     AuthenticationController.authenticated,
     SubtitlesController.show)
-  app.get('/movies/:movieId/views',
-    AuthenticationController.authenticated,
-    ViewsController.show)
+  // app.get('/movies/:movieId/views',
+  //   AuthenticationController.authenticated,
+  //   ViewsController.show)
   app.get('/streams/:movieId',
     AuthenticationController.authenticated,
     StreamController.show)

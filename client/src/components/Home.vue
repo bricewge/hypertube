@@ -114,6 +114,7 @@
               <span class="grey--text">
                 <p>{{ props.item.title }}</p>
                 <p>{{ props.item.year }} - {{ props.item.rating }}/10</p>
+                <p>{{ props.item.viewed ? 'Viewed' : 'Not viewed' }}</p>
               </span>
             </div>
           </v-card-title>
