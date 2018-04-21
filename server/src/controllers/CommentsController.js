@@ -46,7 +46,7 @@ module.exports = {
     body: Joi.object().keys({
       user_id: Joi.number().integer(),
       movie_id: Joi.number().integer(),
-      content: Joi.string().min(2).alphanum()
+      content: Joi.string()
     })
   }),
   async post (req, res) {

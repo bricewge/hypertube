@@ -46,10 +46,10 @@ module.exports = (app, passport) => {
     UsersController.validateUpdate,
     UsersController.update)
   app.get('/movies',
-    // AuthenticationController.authenticated,
+    AuthenticationController.authenticated,
     MoviesController.index)
   app.get('/movies/:movieId',
-    // AuthenticationController.authenticated,
+    AuthenticationController.authenticated,
     MoviesController.show)
   app.get('/movies/:movieId/comments',
     AuthenticationController.authenticated,
