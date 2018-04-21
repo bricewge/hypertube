@@ -60,8 +60,8 @@ module.exports = {
   // TODO Create movie if it doesn't exists
   async show (req, res) {
     try {
-      if (!req.params.MovieImdbId) throw new Error()
-      let movie = await Movie.findOne({where: {imdb_id: req.params.MovieImdbId}, include: [{
+      if (!req.params.movieId) throw new Error()
+      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}, include: [{
         model: Comment,
         attributes: ['content'],
         include: [{
@@ -73,7 +73,7 @@ module.exports = {
       let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
       res.movie = movie
       res.torrent = torrent
-      // console.log(torrent)
+      console.log(movie)
       if (torrent && !torrent.file_path) {
          //TODO get other than first torrent
         let magnetLink = torrent.hash //getMagnetLink(req.params.movieId)

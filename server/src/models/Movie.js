@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
     imdb_id: {
       type: DataTypes.STRING,
       unique: true,
-	  allowNull: false,
+      allowNull: false,
+      primaryKey: true
     },
     title: {
       type: DataTypes.STRING,

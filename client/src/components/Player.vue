@@ -77,7 +77,7 @@ export default {
       try {
         await this.axios.post('/comments', {
           content: this.comment,
-          movie_id: '13' // TODO Should use imdb_id
+          imdb_id: this.$route.params.imdbId
         })
         let comment = {content: this.comment, User: {login: this.$auth.user().login}}
         this.comments.push(comment)
