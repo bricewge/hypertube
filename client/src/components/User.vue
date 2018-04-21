@@ -20,8 +20,12 @@ export default {
   },
 
   async mounted () {
-    const response = await this.axios.get(`/users/${this.$route.params.login}` )
-    this.user = response.data
+    try {
+      const response = await this.axios.get(`/users/${this.$route.params.login}` )
+      this.user = response.data
+    } catch (err) {
+      this.$router.push('/')
+    }
   }
 }
 </script>

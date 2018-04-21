@@ -5,14 +5,8 @@ const path = require('path')
 const {Movie, Torrent, User, Comment} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
-const Op = Sequelize.Op;
+const Op = Sequelize.Op
 const config = require('../config/config')
-
-// WAITING For actual magnet-link support
-const hashes = [
-  '88594AAACBDE40EF3E2510C47374EC0AA396C08E', // Big Buck Bunny, MP4
-  'ce9156eb497762f8b7577b71c0647a4b0c3423e1' // Inception, MKV
-]
 
 let torrents = {}
 
@@ -79,12 +73,13 @@ module.exports = {
         }]
       }]
                                       })
-      res.movie = movie
       let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
-	  console.log(torrent);
+      res.movie = movie
+      res.torrent = torrent
+      // console.log(torrent)
       if (torrent && !torrent.file_path) {
          //TODO get other than first torrent
-        let magnetLink = torrent.hash//getMagnetLink(req.params.movieId)
+        let magnetLink = torrent.hash //getMagnetLink(req.params.movieId)
         //let magnetLink = hashes[0]
         const engine = torrentStream(
           magnetLink,
@@ -92,7 +87,8 @@ module.exports = {
         )
         engine.once('ready', () => onEngineReady(engine, res, torrent))
         engine.once('idle', () => onEngineIdle(engine))
-	} else if (torrent) {
+	    } else if (torrent) {
+        movie.dataValues.url = '/streams/' + torrent.dataValues.hash.toLowerCase() + '.m3u8'
         res.status(200).send(movie)
 	}
     } catch (err) {
@@ -130,8 +126,6 @@ function onEngineReady (engine, res, torrent) {
     file_path: res.file.path.full
   })
   // next()
-  // TODO transcode
-  // TODO Mybe wait for transcode to output the first file | ?
   // TODO Store in DB | OK
 }
 
@@ -160,17 +154,16 @@ function transcode (streamIn, file, res) {
       .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
-      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`); })
-	  .on('progress', (progress) => {
-		  var timer = parseInt(progress.timemark.split(":")[1])
-		  if (!this.is_send)
-		  	console.log(progress.timemark + " | " + timer);
-		  if(timer >= 2 && !this.is_send){
-        res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
-        console.log(res.movie)
-			  res.status(200).send(res.movie)
-			  this.is_send = true;
-		  }
+      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+      .on('progress', (progress) => {
+        let timer = parseInt(progress.timemark.split(':')[1])
+        if (!this.is_send) console.log(progress.timemark + " | " + timer)
+        if (timer >= 2 && !this.is_send) {
+          res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
+          console.log(res.movie)
+          res.status(200).send(res.movie)
+          this.is_send = true
+		    }
 	  })
       .on('end', () => {
         console.log('file has been converted succesfully')
