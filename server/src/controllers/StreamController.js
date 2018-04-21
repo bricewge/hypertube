@@ -12,7 +12,7 @@ const CONTENT_TYPE = {
 module.exports = {
   async show (req, res) {
     try {
-      const filename = path.join(config.storage, req.params.movieId)
+      const filename = await path.join(config.storage, req.params.movieId)
       // console.log(filename, )
       fs.accessSync(filename, fs.constants.R_OK)
       const filetype = path.extname(filename).toLowerCase().substr(1)

@@ -103,7 +103,7 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 
 function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 {
-	request("https://thepiratebay.org" + endpoint, async function(error, rep, rrr) {
+	request("https://thepiratebay.red" + endpoint, async function(error, rep, rrr) {
 		if (error)
 		{
 			console.log(error)
@@ -138,7 +138,7 @@ module.exports = {
 
 search_best_movie_pirate_bay(callback){
     var lst = []
-    request('https://thepiratebay.org/top/201', function(err, resp, html) {
+    request('https://thepiratebay.red/top/201', function(err, resp, html) {
         if (err)
             console.log(err)
         if (!err){
@@ -159,7 +159,7 @@ search_best_movie_pirate_bay(callback){
 
 search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
     var lst = []
-    request('https://thepiratebay.org/search/' + encodeURI(imdb_id) + '/0/99', function(err, resp, html) {
+    request('https://thepiratebay.red/search/' + encodeURI(imdb_id) + '/0/99', function(err, resp, html) {
         if (err)
             console.log(err)
         if (!err){
@@ -270,8 +270,8 @@ search_imdb_data_by_imdb_id_list(imdb_ids, callback){
 
 	search_torrent_by_imdb_id_list(imdb_ids, callback)
 	{
-		for (var i = 0; i < ibdb_ids.length; i++) {
-			imdb_id = ibdb_ids[i];
+		for (var i = 0; i < imdb_ids.length; i++) {
+			imdb_id = imdb_ids[i];
 			search_movie_yts_by_imdb_id(imdb_id, () => {});
 			search_movie_pirate_bay_by_imdb_id(imdb_id, () => {});
 		}

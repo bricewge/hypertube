@@ -26,9 +26,10 @@ module.exports = {
             title: {
               [Op.like]: "%" + req.query.q + "%"
             }
-          }})
+          }
+        })
           if (movies.length == 0)
-            Search.search_movie(async get_movies => {
+            Search.search_movie(req.query.q, async get_movies => {
 				res.send(get_movies);
 				for (var i = 0; i < get_movies.length; i++) {
 					var movie = get_movies[i];
@@ -38,7 +39,7 @@ module.exports = {
 					let torrent = await Torrent.findOne({where: {imdb_id: movie["imdb_id"]}})
 					if (!torrent)
 					{
-						lst_movie.append(movie["imdb_id"]);
+						lst_movie.push(movie["imdb_id"]);
 					}
 					console.log(movies);
 					Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
@@ -46,10 +47,6 @@ module.exports = {
 			}, req.query.q)
           else
             res.send(movies);
-        if (movies.length == 0)
-          Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q)
-        else
-          res.send(movies)
       }
       else {
         const movies = await Movie.findAll({
@@ -69,8 +66,8 @@ module.exports = {
   // TODO Create movie if it doesn't exists
   async show (req, res) {
     try {
-      if (!req.params.movieId) throw new Error()
-      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}, include: [{
+      if (!req.params.MovieImdbId) throw new Error()
+      let movie = await Movie.findOne({where: {imdb_id: req.params.MovieImdbId}, include: [{
         model: Comment,
         attributes: ['content'],
         include: [{
@@ -80,11 +77,11 @@ module.exports = {
       }]
                                       })
       res.movie = movie
-      let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
+      let torrent = await Torrent.findOne({where: {imdb_id: req.params.MovieImdbId}}) //TODO: edit
 	  console.log(torrent);
       if (torrent && !torrent.file_path) {
          //TODO get other than first torrent
-        let magnetLink = torrent.hash//getMagnetLink(req.params.movieId)
+        let magnetLink = torrent.hash//getMagnetLink(req.params.MovieImdbId)
         //let magnetLink = hashes[0]
         const engine = torrentStream(
           magnetLink,
