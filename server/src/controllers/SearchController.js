@@ -1,8 +1,13 @@
 let request = require('request');
 let cheerio = require('cheerio');
-//let jsonframe = require('jsonframe-cheerio')
+var srt2vtt = require('srt-to-vtt')
+var fs = require('fs')
 
-const {Movie, Torrent} = require('../models')
+//let jsonframe = require('jsonframe-cheerio')
+const OpenSubtitles = require('opensubtitles-api');
+const OS = new OpenSubtitles("TemporaryUserAgent");
+
+const {Movie, Torrent, Subtitle} = require('../models')
 
 function search_content($content, search, text)
 {
@@ -274,7 +279,28 @@ search_imdb_data_by_imdb_id_list(imdb_ids, callback){
 			imdb_id = ibdb_ids[i];
 			search_movie_yts_by_imdb_id(imdb_id, () => {});
 			search_movie_pirate_bay_by_imdb_id(imdb_id, () => {});
+			search_subtitle(imdb_id, () => {})
 		}
+	},
+
+    search_subtitle(imdb_id, callback){
+		OS.search({
+		    imdbid: imdb_id
+		}).then(async subtitles => {
+			var ttt = []
+			for (var key in subtitles) {
+				var r = subtitles[key];
+				var res = {
+					imdb_id: imdb_id,
+					file_path: r["url"],
+					language: r["lang"],
+					opensub_id: r["id"]
+				}
+				ttt.push(res);
+				await Subtitle.create(res);
+			}
+			callback(res);
+		});
 	},
 
     search_movie(film, callback){

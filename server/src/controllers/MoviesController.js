@@ -28,7 +28,7 @@ module.exports = {
             }
           }})
           if (movies.length == 0)
-            Search.search_movie(async get_movies => {
+            Search.search_movie(req.query.q, async get_movies => {
 				res.send(get_movies);
 				for (var i = 0; i < get_movies.length; i++) {
 					var movie = get_movies[i];
