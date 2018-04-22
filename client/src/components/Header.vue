@@ -7,11 +7,8 @@
     <router-link to="/" ><img src="../assets/logo-small.png"/></router-link>
   </div>
   <div class="link-cntnr align-rgt">
-    <!-- THESE LINKS WILL BE REMOVED -->
-    <!-- <div><router-link to="/movie">Show movie</router-link></div> -->
-    <!-- END -->
     <div class="lang">
-      <div v-for="lang in languages">
+      <div v-for="lang in languages" :key='lang'>
         <img :src="lang.image" :ref="lang.name" @click="setLang(lang.name)" />
       </div>
     </div>

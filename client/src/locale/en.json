@@ -18,5 +18,21 @@
   "with": "With",
   "your-comment": "Your comment...",
   "ago": "ago",
-  "il-y-a": " "
+  "il-y-a": " ",
+  "casting": "casting",
+  "director": "director",
+  "producer": "producer",
+  "rating": "rating",
+  "year": "year",
+  "summary": "summary",
+  "duration": "duration",
+  "update-profile": "Update Profile",
+  "image": "Image",
+  "title": "Title",
+  "gender": "Gender",
+  "rating-min": "Rating min",
+  "rating-max": "Rating max",
+  "year-min": "Year min",
+  "year-max": "Year max",
+  "sort-by": "Sort by"
 }

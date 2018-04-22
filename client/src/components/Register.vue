@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import {validPassword, nonEmptyPassword, validEmail} from '@/util/validation'
-
 export default {
   data () {
     return {
@@ -84,6 +82,7 @@ export default {
           headers: headers,
           autoLogin: false
         })
+        console.log(response)
         await this.$auth.login({ data: {
           email: this.user.email,
           password: this.user.password
@@ -100,7 +99,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang='scss'>
 @import '../assets/css/login.scss';
 </style>

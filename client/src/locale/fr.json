@@ -18,5 +18,21 @@
   "with": "Avec",
   "your-comment": "Votre commentaire...",
   "ago": " ",
-  "il-y-a": "il y a "
+  "il-y-a": "il y a ",
+  "casting": "casting",
+  "director": "réalisateur",
+  "producer": "producteur",
+  "rating": "note",
+  "year": "année",
+  "summary": "résumé",
+  "duration": "durée",
+  "update-profile": "Modifier le profil",
+  "image": "Image",
+  "title": "titre",
+  "gender": "genre",
+  "rating-min": "Note min",
+  "rating-max": "Note max",
+  "year-min": "Année min",
+  "year-max": "Année max",
+  "sort-by": "Trier par"
 }

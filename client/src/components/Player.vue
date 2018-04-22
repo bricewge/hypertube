@@ -1,29 +1,35 @@
 <template>
 <div>
-  <h1>{{ movie.title }}</h1>
-  <div class="player-cntnr">
-    <div class="video-cntnr" id="player">
-    </div>
-      <p>Casting: {{ movie.casting }}</p>
-      <p>Director: {{ movie.director }}</p>
-      <p>Producer: {{ movie.producer }}</p>
-      <p>Rating: {{ movie.rating }}</p>
-      <p>Year: {{ movie.year }}</p>
-      <p>Summary: {{ movie.summary }}</p>
-      <!-- <p>Duration: {{ movie.length }}</p> -->
-    <div>
-    </div>
-    <div class="comment-cntnr">
-      <input v-model="comment"
-             @keyup.enter="submitComment"
-             type="text"
-             name="comment"
-             :placeholder="$t('your-comment')">
-      <div v-for='(comment, index) in comments' v-bind:key='index' class="comment">
-        <router-link :to="/user/ + comment.User.login">
-          <p>{{ comment.User.login }}</p>
-        </router-link>
-        <p>{{ comment.content }}</p>
+  <div>
+    <div class="bck-cntnr" v-bind:style="{ backgroundImage: 'url(' + movie.image_url + ')' }"></div>
+    <div class="main-cntnr">
+      <div class="left-cntnr">
+        <img :src="movie.image_url"/>
+      </div>
+      <div class="rgt-cntnr">
+        <h1>{{ movie.title }}</h1>
+        <p>{{ $t('casting') }}: {{ movie.casting }}</p>
+        <p>{{ $t('director') }}: {{ movie.director }}</p>
+        <p>{{ $t('producer') }}: {{ movie.producer }}</p>
+        <p>{{ $t('rating') }}: {{ movie.rating }}</p>
+        <p>{{ $t('year') }}: {{ movie.year }}</p>
+        <p>{{ $t('summary') }}: {{ movie.summary }}</p>
+        <!-- <p>{{ $t('duration') }}: {{ movie.length }}</p> -->
+        <div class="video-cntnr player-cntnr" id="player">
+        </div>
+        <div class="comment-cntnr">
+          <input v-model="comment"
+                 @keyup.enter="submitComment"
+                 type="text"
+                 name="comment"
+                 :placeholder="$t('your-comment')">
+          <div v-for='(comment, index) in comments' v-bind:key='index' class="comment">
+            <router-link :to="/user/ + comment.User.login">
+              <p>{{ comment.User.login }}</p>
+            </router-link>
+            <p>{{ comment.content }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -31,6 +37,7 @@
 </template>
 
 <script>
+import Clappr from 'clappr'
 export default {
 
   data () {
@@ -54,23 +61,23 @@ export default {
 
       this.player = new Clappr.Player({
         source: '/api' + response.data.url,
-        parentId: "#player",
+        parentId: '#player',
         poster: response.data.image_url,
         hlsjsConfig: { xhrSetup: (xhr) => {
           xhr.withCredentials = true
           xhr.setRequestHeader('Authorization', `Bearer ${this.$auth.token()}`)
         }},
         events: {
-          onPlay: function() {
+          onPlay: function () {
             var container = this.core.getCurrentContainer()
             console.log(container.getPlaybackType())
             if (player._hasSeek) {
               return
             }
-            player.seek(0);
-            player._hasSeek = true;
+            player.seek(0)
+            player._hasSeek = true
           },
-          onEnded: function() {
+          onEnded: function () {
             // TODO Send as viewed
             console.log('Viewed')
           }
@@ -106,43 +113,85 @@ export default {
 <style lang='scss' scoped>
 @import '../assets/css/application';
 
-/* TODO use it */
-.player-cntnr{
-    width: 60%;
-    margin: 2em auto;
-    background: $dark;
-    padding: 2em;
-}
-
-h1{
-    color: $grey-txt;
-    font-size: 1.5vw;
-    font-weight: 500;
-    margin: 1em;
-}
-
-/* TODO use it */
-.video-cntnr{
-    margin-bottom: 2em;
-  position: relative;
-  padding-bottom: 56.25%; /* 16:9 */
-  padding-top: 25px;
-  height: 0;
-}
-
-.video-cntnr iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
+.main-cntnr{
+  display: flex;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  background: rgba(25,26,28,.7);
+  overflow: scroll;
+}
+
+.bck-cntnr {
+  position: fixed;
+  left: 0;
+  background-size: cover;
+  right: 0;
+  width: 105vw;
+  margin-left: -1em;
+  height: 100vh;
+  z-index: 0;
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+  margin-top: -4em;
+}
+
+.main-cntnr div{
+  margin-top: 2em;
+  padding: 2em;
+}
+
+.left-cntnr{
+  flex: 1;
+}
+
+.rgt-cntnr{
+  flex: 2;
+  text-align: left;
+}
+
+.main-cntnr h1{
+  font-weight: 500;
+  font-size: 3vw;
+}
+
+.main-cntnr p{
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.main-cntnr p:first-of-type{
+  opacity: .6;
+}
+
+.left-cntnr img{
+  width: 100%;
+  height: auto;
+}
+
+button{
+  margin-top: 5em;
+}
+
+.comment-cntnr{
+  margin-bottom: 2em;
+  background: rgba(0,0,0,.6);
 }
 
 .comment{
   display: block;
   width: 100%;
   text-align: left;
-  border-bottom: 2px solid $darker;
+  border-bottom: 1px solid $grey-txt;
+  padding: .5em !important;
+  margin: 0;
 }
 
 .comment:last-of-type{
@@ -151,24 +200,13 @@ h1{
 
 .comment p{
   font-size: 1.3em;
-  color: $grey-txt;
+  color: white;
   font-weight: 450;
-  margin: .5em;
+  margin: .2em;
 }
 
 .comment p:first-of-type{
   font-size: 1em;
   font-weight: 300;
-}
-
-.comment-cntnr input{
-  border: 1px solid $black;
-  background: $darker;
-  padding: .6em 3em;
-  width: 100%;
-  margin-bottom: 2em;
-  border-radius: .3em;
-  font-size: 1.2em;
-  box-sizing: border-box;
 }
 </style>
