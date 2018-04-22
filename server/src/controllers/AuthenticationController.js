@@ -24,7 +24,7 @@ module.exports = {
   validateRegister: celebrate(
     {body: Joi.object().keys({
       email: Joi.string().email(),
-      password: Joi.string().min(8),
+      password: Joi.string().regex(/^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])([\w\-\.\_ ]+)$/).error(new Error('Password must have at least one lowercase, one uppercase, and one number')),
       name: Joi.string().alphanum(),
       firstname: Joi.string().alphanum(),
       login: Joi.string().alphanum()
