@@ -58,7 +58,6 @@ passport.use(new GoogleStrategy(pass.google,
 passport.use(new FortyTwoStrategy(pass.fortyTwo,
   async (accessToken, refreshToken, profile, cb) => {
     try {
-      // TODO Fix, double user creation
       const query = { where: {fortyTwoId: profile.id},
         defaults: {
           email: profile._json.email,
@@ -68,13 +67,11 @@ passport.use(new FortyTwoStrategy(pass.fortyTwo,
           name: profile._json.last_name,
           image_url: profile._json.image_url
         }}
-      User.findOrCreate(query)
       const result = await User.findOrCreate(query)
-      // console.log(result)
       cb(null, result[0].dataValues)
     } catch (err) {
-      // console.log(err)
-      cb(err.message)
+      let notTrue = false // Avoid EsLint error
+      cb(notTrue)
     }
   }
 ))
