@@ -44,9 +44,9 @@ module.exports = {
           if (movies.length === 0)
             Search.search_movie(req.query.q, async get_movies => {
 				res.send(get_movies);
+				var lst_movie = []
 				for (var i = 0; i < get_movies.length; i++) {
 					var movie = get_movies[i];
-					var lst_movie = []
 					if (!movie || !movie["imdb_id"])
 						continue;
 					let torrent = await Torrent.findOne({where: {imdb_id: movie["imdb_id"]}})
@@ -54,9 +54,9 @@ module.exports = {
 					{
 						lst_movie.push(movie["imdb_id"]);
 					}
-					console.log(movies);
-					Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
 				}
+				console.log(lst_movie);
+				Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
 			}, req.query.q)
           else
             res.send(movies);

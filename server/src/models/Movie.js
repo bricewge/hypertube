@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     director: DataTypes.STRING,
     producer: DataTypes.STRING,
     casting: DataTypes.STRING,
-    //duration_in_min: DataTypes.STRING,
+    duration: DataTypes.STRING,
     rating: {
       type: DataTypes.STRING,
 	  allowNull: false,
