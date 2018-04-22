@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
   Movie.associate = function (models) {
     Movie.hasMany(models.Comment)
     Movie.hasMany(models.View)
+    Movie.hasMany(models.Subtitle)
     //  Movie.hasMany(models.Torrent, {as: 'Torrent'})
   }
 

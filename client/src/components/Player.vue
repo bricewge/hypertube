@@ -45,12 +45,11 @@ export default {
   async mounted () {
     try {
       if (!this.$route.params.imdbId) return
-      let test = await this.axios.post('/views', {MovieImdbId: this.$route.params.imdbId})
-      console.log(test)
 
       const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
       this.movie = response.data
       this.comments = response.data.Comments
+      console.log(this.movie)
 
       this.player = new Clappr.Player({
         source: '/api' + response.data.url,
@@ -62,16 +61,19 @@ export default {
         }},
         events: {
           onPlay: function() {
-            var container = this.core.getCurrentContainer()
-            console.log(container.getPlaybackType())
+            let player = this.core.getCurrentContainer()
+            if (player.getPlaybackType() !== 'live') return
             if (player._hasSeek) {
               return
             }
             player.seek(0);
             player._hasSeek = true;
           },
-          onEnded: function() {
-            // TODO Send as viewed
+          onEnded: async function() {
+            const response = await this.axios.post(
+              '/views',
+              {MovieImdbId: this.$route.params.imdbId})
+            console.log(response)
             console.log('Viewed')
           }
         }

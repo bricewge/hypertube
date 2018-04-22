@@ -146,15 +146,16 @@ function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 function search_subtitle(imdb_id, callback){
 	setTimeout(function () {
 		OS.search({
-			imdbid: imdb_id
+			imdbid: imdb_id,
+      sublanguageid: "fre,eng,chi"
 		}).then(async subtitles => {
 			var ttt = []
 			for (var key in subtitles) {
 				var r = subtitles[key];
 				var res = {
-					imdb_id: imdb_id,
+					MovieImdbId: imdb_id,
 					file_path: r["url"],
-					language: r["lang"],
+					language: key,
 					opensub_id: r["id"]
 				}
 				ttt.push(res);
@@ -336,7 +337,7 @@ search_imdb_data_by_imdb_id_list(imdb_ids, callback){
 	search_torrent_by_imdb_id_list(imdb_ids, callback)
 	{
 		for (var i = 0; i < imdb_ids.length; i++) {
-			imdb_id = imdb_ids[i];
+			let imdb_id = imdb_ids[i];
 			search_movie_yts_by_imdb_id(imdb_id, (v) => {});
 			search_movie_pirate_bay_by_imdb_id(imdb_id, (v) => {});
 			search_subtitle(imdb_id, (v) => {})

@@ -30,7 +30,7 @@ export default{
     return {
       languages: [
         {name: 'st', image: '/static/smurf.png'},
-        {name: 'cn', image: '/static/china.png'},
+        {name: 'zh', image: '/static/china.png'},
         {name: 'en', image: '/static/united-kingdom.png'},
         {name: 'fr', image: '/static/france.png'}
       ]
