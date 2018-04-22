@@ -3,6 +3,8 @@ let cheerio = require('cheerio');
 var srt2vtt = require('srt-to-vtt')
 var fs = require('fs')
 
+const THE_PIRATEBAY_URI = "https://thepiratebay.red"
+
 //let jsonframe = require('jsonframe-cheerio')
 const OpenSubtitles = require('opensubtitles-api');
 const OS = new OpenSubtitles("TemporaryUserAgent");
@@ -92,7 +94,7 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 				producer : p,
 				casting: c,
 				rating: $x('#title-overview-widget > div.vital > div.title_block > div > div.ratings_wrapper > div.imdbRating > div.ratingValue > strong > span').text(),
-				time: $x('#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div > time').text().trim(),
+				duration: $x('#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div > time').text().trim(),
 				summary: $x('#titleStoryLine > div:nth-child(3) > p').text().trim(),
 				//tags: $x('#titleStoryLine > div:nth-child(8) > a').text().trim().split(" "),
 				//date: dates,
@@ -108,7 +110,7 @@ function search_imbd_movie_by_imdb_id(imdb_id, callback)
 
 function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 {
-	request("https://thepiratebay.red" + endpoint, async function(error, rep, rrr) {
+	request(THE_PIRATEBAY_URI + endpoint, async function(error, rep, rrr) {
 		if (error)
 		{
 			console.log(error)
@@ -139,60 +141,31 @@ function search_pirate_bay_magnet_by_endpoint(endpoint, callback)
 	});
 }
 
-module.exports = {
 
-search_best_movie_pirate_bay(callback){
-    var lst = []
-    request('https://thepiratebay.red/top/201', function(err, resp, html) {
-        if (err)
-            console.log(err)
-        if (!err){
-            const $ = cheerio.load(html);
-            $('div.detName > a').each((i, html) => {
-                lst.push(new Promise(function(resolve, reject) {
-                    setTimeout(() => {
-                        search_pirate_bay_magnet_by_endpoint($(html).attr('href'), (e) => resolve(e));
-                    }, Math.random() * 18000);
-                }));
-            });
-        }
-        Promise.all(lst).then(function(values) {
-            callback(values);
-        });
-    });
-},
-
-search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
-    var lst = []
-    request('https://thepiratebay.red/search/' + encodeURI(imdb_id) + '/0/99', function(err, resp, html) {
-        if (err)
-            console.log(err)
-        if (!err){
-            const $ = cheerio.load(html);
-            $('div.detName > a').each((i, html) => {
-                lst.push(new Promise(function(resolve, reject) {
-                    setTimeout(() => {
-                        search_pirate_bay_magnet_by_endpoint($(html).attr('href'), (e) => resolve(e));
-                    }, Math.random() * 18000);
-                }));
-            });
-        }
-        Promise.all(lst).then(async function(values) {
-			for (var i = 0; i < values.length; i++) {
-				v = values[i];
-				if (v && v["hash"])
-				{
-					await Torrent.create(v).catch(function(err) {
-						console.log(v["hash"] + " already exist.")
-					});
+// NEED TO BE HERE ?
+function search_subtitle(imdb_id, callback){
+	setTimeout(function () {
+		OS.search({
+			imdbid: imdb_id
+		}).then(async subtitles => {
+			var ttt = []
+			for (var key in subtitles) {
+				var r = subtitles[key];
+				var res = {
+					imdb_id: imdb_id,
+					file_path: r["url"],
+					language: r["lang"],
+					opensub_id: r["id"]
 				}
+				ttt.push(res);
+				await Subtitle.create(res);
 			}
-            callback(values);
-        });
-    });
-},
+			callback(res);
+		});
+	}, Math.random() * 15000);
+}
 
-search_movie_yts_by_imdb_id(imdb_id , callback)
+function search_movie_yts_by_imdb_id(imdb_id , callback)
 {
 	request('https://yts.am/api/v2/list_movies.json?query_term=' + imdb_id, async function(err, resp, html) {
 		if (err)
@@ -222,7 +195,62 @@ search_movie_yts_by_imdb_id(imdb_id , callback)
 			callback(undefined);
 
 	});
+}
+
+function search_movie_pirate_bay_by_imdb_id(imdb_id, callback){
+    var lst = []
+    request(THE_PIRATEBAY_URI + '/search/' + encodeURI(imdb_id) + '/0/99', function(err, resp, html) {
+        if (err)
+            console.log(err)
+        if (!err){
+            const $ = cheerio.load(html);
+            $('div.detName > a').each((i, html) => {
+                lst.push(new Promise(function(resolve, reject) {
+                    setTimeout(() => {
+                        search_pirate_bay_magnet_by_endpoint($(html).attr('href'), (e) => resolve(e));
+                    }, Math.random() * 18000);
+                }));
+            });
+        }
+        Promise.all(lst).then(async function(values) {
+			for (var i = 0; i < values.length; i++) {
+				v = values[i];
+				if (v && v["hash"])
+				{
+					await Torrent.create(v).catch(function(err) {
+						console.log(v["hash"] + " already exist.")
+					});
+				}
+			}
+            callback(values);
+        });
+    });
+}
+
+
+module.exports = {
+
+search_best_movie_pirate_bay(callback){
+    var lst = []
+    request(THE_PIRATEBAY_URI + '/top/201', function(err, resp, html) {
+        if (err)
+            console.log(err)
+        if (!err){
+            const $ = cheerio.load(html);
+            $('div.detName > a').each((i, html) => {
+                lst.push(new Promise(function(resolve, reject) {
+                    setTimeout(() => {
+                        search_pirate_bay_magnet_by_endpoint($(html).attr('href'), (e) => resolve(e));
+                    }, Math.random() * 18000);
+                }));
+            });
+        }
+        Promise.all(lst).then(function(values) {
+            callback(values);
+        });
+    });
 },
+
 
 search_imdb_data_by_imdb_id_list(imdb_ids, callback){
 	var lst = []
@@ -273,36 +301,6 @@ search_imdb_data_by_imdb_id_list(imdb_ids, callback){
         });
     },
 
-	search_torrent_by_imdb_id_list(imdb_ids, callback)
-	{
-		for (var i = 0; i < imdb_ids.length; i++) {
-			imdb_id = imdb_ids[i];
-			search_movie_yts_by_imdb_id(imdb_id, () => {});
-			search_movie_pirate_bay_by_imdb_id(imdb_id, () => {});
-			search_subtitle(imdb_id, () => {})
-		}
-	},
-
-    search_subtitle(imdb_id, callback){
-		OS.search({
-		    imdbid: imdb_id
-		}).then(async subtitles => {
-			var ttt = []
-			for (var key in subtitles) {
-				var r = subtitles[key];
-				var res = {
-					imdb_id: imdb_id,
-					file_path: r["url"],
-					language: r["lang"],
-					opensub_id: r["id"]
-				}
-				ttt.push(res);
-				await Subtitle.create(res);
-			}
-			callback(res);
-		});
-	},
-
     search_movie(film, callback){
         request('http://www.imdb.com/find?q='+ encodeURI(film) + '&s=tt&ttype=ft&ref_=fn_ft', function(err, resp, html) {
             if (!err) {
@@ -329,5 +327,19 @@ search_imdb_data_by_imdb_id_list(imdb_ids, callback){
                 });
             } else {console.log(err); callback([])}
         });
-    }
+    },
+
+	search_movie_yts_by_imdb_id : search_movie_yts_by_imdb_id,
+	search_movie_pirate_bay_by_imdb_id : search_movie_pirate_bay_by_imdb_id,
+	search_subtitle : search_subtitle,
+
+	search_torrent_by_imdb_id_list(imdb_ids, callback)
+	{
+		for (var i = 0; i < imdb_ids.length; i++) {
+			imdb_id = imdb_ids[i];
+			search_movie_yts_by_imdb_id(imdb_id, (v) => {});
+			search_movie_pirate_bay_by_imdb_id(imdb_id, (v) => {});
+			search_subtitle(imdb_id, (v) => {})
+		}
+	},
 }
