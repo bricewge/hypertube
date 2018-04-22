@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import VTTConverter from 'srt-webvtt'
+
 export default {
 
   data () {
@@ -51,10 +53,26 @@ export default {
       this.comments = response.data.Comments
       console.log(this.movie)
 
+      let subtitles = []
+      for (let key in response.data.subtitles) {
+        let sub = response.data.subtitles[key]
+        let url = '/subs' + sub.file_path.substr(6)
+        console.log(url)
+        let srt = await this.axios.get(url, {responseType: 'blob'})
+        let vttConverter = new VTTConverter(srt.data)
+        subtitles.push({
+          lang: sub.language,
+          src: await vttConverter.getURL(),
+          label: sub.language
+        })
+      }
+      console.log(subtitles)
+
       this.player = new Clappr.Player({
         source: '/api' + response.data.url,
         parentId: "#player",
         poster: response.data.image_url,
+        externalTracks: subtitles,
         hlsjsConfig: { xhrSetup: (xhr) => {
           xhr.withCredentials = true
           xhr.setRequestHeader('Authorization', `Bearer ${this.$auth.token()}`)

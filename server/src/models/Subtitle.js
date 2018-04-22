@@ -1,5 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
   const Subtitle = sequelize.define('Subtitle', {
+    imdb_id: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     file_path: {
       type: DataTypes.STRING
     },
@@ -13,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   })
-  Subtitle.associate = function (models) {
-    Subtitle.belongsTo(models.Movie)
-  }
+  // Subtitle.associate = function (models) {
+  //   Subtitle.belongsTo(models.Movie)
+  // }
   return Subtitle
 }
