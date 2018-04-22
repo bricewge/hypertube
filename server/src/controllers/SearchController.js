@@ -2,6 +2,7 @@ let request = require('request');
 let cheerio = require('cheerio');
 var srt2vtt = require('srt-to-vtt')
 var fs = require('fs')
+var path = require('path')
 
 const THE_PIRATEBAY_URI = "https://thepiratebay.red"
 
@@ -10,6 +11,7 @@ const OpenSubtitles = require('opensubtitles-api');
 const OS = new OpenSubtitles("TemporaryUserAgent");
 
 const {Movie, Torrent, Subtitle} = require('../models')
+const config = require('../config/config')
 
 function search_content($content, search, text)
 {
@@ -150,13 +152,21 @@ function search_subtitle(imdb_id, callback){
 		}).then(async subtitles => {
 			var ttt = []
 			for (var key in subtitles) {
-				var r = subtitles[key];
+				let r = subtitles[key];
+				var link = path.join(config.storage, r['id'] + '.vtt')
 				var res = {
 					imdb_id: imdb_id,
-					file_path: r["url"],
+					file_path: link,
 					language: r["lang"],
 					opensub_id: r["id"]
 				}
+				var srt2vtt = require('srt-to-vtt')
+				var fs = require('fs')
+				const http = require("http");
+				http.get(r["url"], response => {
+				  response.pipe(srt2vtt())
+				    .pipe(fs.createWriteStream(link))
+				});
 				ttt.push(res);
 				await Subtitle.create(res);
 			}
