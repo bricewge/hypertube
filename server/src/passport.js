@@ -67,11 +67,11 @@ passport.use(new FortyTwoStrategy(pass.fortyTwo,
           name: profile._json.last_name,
           image_url: profile._json.image_url
         }}
-      User.findOrCreate(query)
       const result = await User.findOrCreate(query)
       cb(null, result[0].dataValues)
     } catch (err) {
-      cb(err.message)
+      let notTrue = false // Avoid EsLint error
+      cb(notTrue)
     }
   }
 ))

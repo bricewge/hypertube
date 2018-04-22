@@ -2,11 +2,16 @@
 <div>
   <h1>{{ movie.title }}</h1>
   <div class="player-cntnr">
-    <div class="video-cntnr">
-      <video-player class="vjs-custom-skin"
-                    :options="playerOptions"
-                    @ready="playerReady">
-      </video-player>
+    <div class="video-cntnr" id="player">
+    </div>
+      <p>Casting: {{ movie.casting }}</p>
+      <p>Director: {{ movie.director }}</p>
+      <p>Producer: {{ movie.producer }}</p>
+      <p>Rating: {{ movie.rating }}</p>
+      <p>Year: {{ movie.year }}</p>
+      <p>Summary: {{ movie.summary }}</p>
+      <!-- <p>Duration: {{ movie.length }}</p> -->
+    <div>
     </div>
     <div class="comment-cntnr">
       <input v-model="comment"
@@ -15,7 +20,9 @@
              name="comment"
              :placeholder="$t('your-comment')">
       <div v-for='(comment, index) in comments' v-bind:key='index' class="comment">
-        <p>{{ comment.user_name }} - {{ $t('il-y-a') }} {{ comment.created_at }} {{ $t('ago') }}</p>
+        <router-link :to="/user/ + comment.User.login">
+          <p>{{ comment.User.login }}</p>
+        </router-link>
         <p>{{ comment.content }}</p>
       </div>
     </div>
@@ -24,79 +31,74 @@
 </template>
 
 <script>
-// GET the path to movie file and subtitles files display it with a video tag
-// also GET all comments linked to this movie
-import 'video.js/dist/video-js.css'
-import 'vue-video-player/src/custom-theme.css'
-import { videoPlayer } from 'vue-video-player'
-import videojs from 'video.js'
-window.videojs = videojs
-// hls plugin for videojs6
-require('videojs-contrib-hls/dist/videojs-contrib-hls.js')
-
 export default {
-  components: {
-    videoPlayer
-  },
 
   data () {
     return {
-      movie: '',
-      comments: [
-        {
-          user_name: 'Josiane',
-          content: 'Trop bien !!',
-          created_at: '2 minutes'
-        },
-        {
-          user_name: 'Philippe',
-          content: 'Josiane, les femmes à la vaisselle !!!',
-          created_at: '3M d\'années'
-        }
-      ],
+      movie: {},
+      comments: [],
       comment: '',
-      playerOptions: {
-        // videojs and plugin options
-        height: '360',
-        // language: 'en',
-        muted: false,
-        sources: [ {
-          withCredentials: false,
-          type: 'application/x-mpegURL',
-          // src: 'https://logos-channel.scaleengine.net/logos-channel/live/biblescreen-ad-free/playlist.m3u8'
-          src: 'http://localhost:8081/streams/88594aaacbde40ef3e2510c47374ec0aa396c08e.m3u8'
-          // src: 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'
-        } ],
-        controls: true,
-        // controlBar: {
-        //   timeDivider: false,
-        //   durationDisplay: false
-        // },
-        poster: 'https://surmon-china.github.io/vue-quill-editor/static/images/surmon-5.jpg'
-      }
+      player: null
     }
   },
 
   async mounted () {
-    // The player need the authorization token to get the stream
-    videojs.Hls.xhr.beforeRequest = (options) => {
-      options.headers = {Authorization: `Bearer ${this.$auth.token()}`}
-      return options
-    }
+    try {
+      if (!this.$route.params.imdbId) return
+      let test = await this.axios.post('/views', {MovieImdbId: this.$route.params.imdbId})
+      console.log(test)
 
-    if (!this.$route.params.imdbId) return
-    const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
-    // console.log(response)
-    this.movie = response.data
+      const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
+      this.movie = response.data
+      this.comments = response.data.Comments
+
+      this.player = new Clappr.Player({
+        source: '/api' + response.data.url,
+        parentId: "#player",
+        poster: response.data.image_url,
+        hlsjsConfig: { xhrSetup: (xhr) => {
+          xhr.withCredentials = true
+          xhr.setRequestHeader('Authorization', `Bearer ${this.$auth.token()}`)
+        }},
+        events: {
+          onPlay: function() {
+            var container = this.core.getCurrentContainer()
+            console.log(container.getPlaybackType())
+            if (player._hasSeek) {
+              return
+            }
+            player.seek(0);
+            player._hasSeek = true;
+          },
+          onEnded: function() {
+            // TODO Send as viewed
+            console.log('Viewed')
+          }
+        }
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  },
+
+  async unmounted () {
+    if (this.player) this.player.destroy()
   },
 
   methods: {
     async submitComment () {
-      this.axios.post('/comments', {
-        content: this.comment,
-        movie_id: '13'
-      })
+      try {
+        await this.axios.post('/comments', {
+          content: this.comment,
+          imdb_id: this.$route.params.imdbId
+        })
+        let comment = {content: this.comment, User: {login: this.$auth.user().login}}
+        this.comments.push(comment)
+        this.comment = ''
+      } catch (err) {
+        console.log(err)
       }
+    }
   }
 }
 </script>

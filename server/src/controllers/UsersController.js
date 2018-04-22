@@ -52,7 +52,7 @@ module.exports = {
       name: Joi.string().alphanum(),
       firstname: Joi.string().alphanum(),
       login: Joi.string().alphanum(),
-      image: Joi.object({ pipe: Joi.func() }).unknown()
+      language: Joi.string().alphanum()
     })}),
 
   async update (req, res, next) {

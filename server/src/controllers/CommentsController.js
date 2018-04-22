@@ -42,26 +42,30 @@ module.exports = {
       })
     }
   },
+
   validatePostComments: celebrate({
     body: Joi.object().keys({
       user_id: Joi.number().integer(),
-      movie_id: Joi.number().integer(),
-      content: Joi.string().min(2).alphanum()
-    })
+      imdb_id: Joi.string().alphanum(),
+      content: Joi.string()
+    },
+    {presence: 'required'})
   }),
+
   async post (req, res) {
     console.log(req.body)
     try {
       const comments = await Comment.create({
         UserId: parseInt(req.id),
         content: req.body.content,
-        MovieId: parseInt(req.body.movie_id)
+        MovieImdbId: req.body.imdb_id
       })
       console.log(comments)
       try {
         const user = await User.findById(req.id)
         try {
-          const movie = await Movie.findById(req.body.movie_id)
+          const movie = await Movie.findOne({where: {imdb_id: req.body.imdb_id}})
+          console.log(movie)
           const result = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
@@ -72,7 +76,7 @@ module.exports = {
               image_url: user.image_url
             },
             movie: {
-              id: movie.id,
+              imdb_id: movie.imdb_id,
               title: movie.title,
               content: movie.content,
               image_url: movie.image_url,

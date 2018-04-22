@@ -1,4 +1,4 @@
-const Search = require('../controllers/SearchController');
+`const Search = require('../controllers/SearchController');
 const {sequelize, Movie} = require('../models')
 
 sequelize.sync({force: true})
@@ -27,4 +27,11 @@ sequelize.sync({force: true})
 })
   .catch(err => {
     console.error('Unable to connect to the database:', err)
-  })
+})*/`
+
+const OpenSubtitles = require('opensubtitles-api');
+const OS = new OpenSubtitles("TemporaryUserAgent");
+OS.search({
+    imdbid: 'tt0357111',
+	extensions: ['srt'],
+}).then(subtitles => {console.log(subtitles) });

@@ -114,6 +114,7 @@
               <span class="grey--text">
                 <p>{{ props.item.title }}</p>
                 <p>{{ props.item.year }} - {{ props.item.rating }}/10</p>
+                <p>{{ props.item.viewed ? 'Viewed' : 'Not viewed' }}</p>
               </span>
             </div>
           </v-card-title>
@@ -160,7 +161,11 @@ export default {
     this.loading = false
     this.movies = res.data
     this.sortBy(this.sorts[2]) // By default sort by rating
-    console.log(this.movies)
+    // console.log(this.movies)
+    // console.log(this)
+    if (this.$auth.check())
+    await this.$parent.$children[0].setLang(this.$auth.user().language)
+    // console.log(this.$auth.user().language)
   },
 
   computed: {

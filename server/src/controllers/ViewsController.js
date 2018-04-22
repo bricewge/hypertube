@@ -25,9 +25,11 @@ module.exports = {
   },
   async post (req, res) {
     try {
-      const view = await View.create(req.body)
+      req.body.UserId = req.id
+      const view = await View.findOrCreate({where: req.body})
       res.status(201).send(view)
     } catch (err) {
+      console.log(err)
       res.status(500).send({
         error: 'An error has occured trying to create the view'
       })

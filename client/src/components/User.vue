@@ -4,8 +4,6 @@
     <img v-bind:src='user.image_url'>
     <p>{{ user.firstname }} {{ user.name }}</p>
     <p>{{ user.login }}</p>
-    <!-- <p>{{ user.age }}</p> -->
-    <p>password</p>
   </div>
 </template>
 
@@ -20,8 +18,17 @@ export default {
   },
 
   async mounted () {
+<<<<<<< HEAD
     const response = await this.axios.get(`/users/${this.$route.params.login}`)
     this.user = response.data
+=======
+    try {
+      const response = await this.axios.get(`/users/${this.$route.params.login}` )
+      this.user = response.data
+    } catch (err) {
+      this.$router.push('/')
+    }
+>>>>>>> 5ee3b7ef9f774549de81f8bfb8ae397f271de453
   }
 }
 </script>

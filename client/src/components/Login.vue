@@ -57,14 +57,13 @@ export default {
     }
   },
 
-  mounted () {
-    console.log(this.$route.query.tkn)
+  async mounted () {
     if (this.$route.query.tkn) {
       window.localStorage.setItem('default_auth_token', this.$route.query.tkn)
       this.$auth.token(null, this.$route.query.tkn)
       document.cookie = 'rememberMe=true'
       this.$auth.watch.authenticated = true
-      this.$auth.fetch()
+      await this.$auth.fetch()
       this.$router.push('/')
     }
   },

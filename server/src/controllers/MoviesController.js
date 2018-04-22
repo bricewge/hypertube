@@ -2,33 +2,47 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const debug = require('debug')('movie')
 const path = require('path')
-const {Movie, Torrent, User, Comment} = require('../models')
+const {Movie, Torrent, User, Comment, View} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
-const Op = Sequelize.Op;
+const Op = Sequelize.Op
 const config = require('../config/config')
 
-// WAITING For actual magnet-link support
-const hashes = [
-  '88594AAACBDE40EF3E2510C47374EC0AA396C08E', // Big Buck Bunny, MP4
-  'ce9156eb497762f8b7577b71c0647a4b0c3423e1' // Inception, MKV
-]
-
 let torrents = {}
+
+function clearViews (movies, id) {
+  for (let i in movies) {
+    let views = movies[i].Views
+    for (let j in views) {
+      if (id === views[j].id) {
+        movies[i].dataValues.viewed = true
+        break
+      }
+    }
+    if (!movies[i].dataValues.viewed) movies[i].dataValues.viewed = false
+    delete movies[i].dataValues.Views
+  }
+  return movies
+}
 
 module.exports = {
   async index (req, res) {
     try {
       if (req.query.q) {
-        const movies = await Movie.findAll({
+        let movies = await Movie.findAll({
           limit: parseInt(req.query.limit) || 50,
           where: {
             title: {
               [Op.like]: "%" + req.query.q + "%"
             }
-          }})
-          if (movies.length == 0)
-            Search.search_movie(async get_movies => {
+          },
+          include: [{
+            model: View
+          }]
+        })
+        movies = clearViews(movies, req.id)
+          if (movies.length === 0)
+            Search.search_movie(req.query.q, async get_movies => {
 				res.send(get_movies);
 				for (var i = 0; i < get_movies.length; i++) {
 					var movie = get_movies[i];
@@ -38,7 +52,7 @@ module.exports = {
 					let torrent = await Torrent.findOne({where: {imdb_id: movie["imdb_id"]}})
 					if (!torrent)
 					{
-						lst_movie.append(movie["imdb_id"]);
+						lst_movie.push(movie["imdb_id"]);
 					}
 					console.log(movies);
 					Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
@@ -46,15 +60,15 @@ module.exports = {
 			}, req.query.q)
           else
             res.send(movies);
-        if (movies.length == 0)
-          Search.search_movie(get_movies => {res.send(get_movies)}, req.query.q)
-        else
-          res.send(movies)
-      }
-      else {
-        const movies = await Movie.findAll({
-          limit: parseInt(req.query.limit) || 50
+      } else {
+        let movies = await Movie.findAll({
+          limit: parseInt(req.query.limit) || 50,
+          include: [{
+            model: View
+          }]
         })
+        movies = clearViews(movies, req.id)
+        // console.log(movies)
         res.send(movies)
       }
     } catch (err) {
@@ -79,12 +93,13 @@ module.exports = {
         }]
       }]
                                       })
-      res.movie = movie
       let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
-	  console.log(torrent);
+      res.movie = movie
+      res.torrent = torrent
+      console.log(movie)
       if (torrent && !torrent.file_path) {
          //TODO get other than first torrent
-        let magnetLink = torrent.hash//getMagnetLink(req.params.movieId)
+        let magnetLink = torrent.hash //getMagnetLink(req.params.movieId)
         //let magnetLink = hashes[0]
         const engine = torrentStream(
           magnetLink,
@@ -92,7 +107,8 @@ module.exports = {
         )
         engine.once('ready', () => onEngineReady(engine, res, torrent))
         engine.once('idle', () => onEngineIdle(engine))
-	} else if (torrent) {
+	    } else if (torrent) {
+        movie.dataValues.url = '/streams/' + torrent.dataValues.hash.toLowerCase() + '.m3u8'
         res.status(200).send(movie)
 	}
     } catch (err) {
@@ -130,8 +146,6 @@ function onEngineReady (engine, res, torrent) {
     file_path: res.file.path.full
   })
   // next()
-  // TODO transcode
-  // TODO Mybe wait for transcode to output the first file | ?
   // TODO Store in DB | OK
 }
 
@@ -160,17 +174,16 @@ function transcode (streamIn, file, res) {
       .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
-      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`); })
-	  .on('progress', (progress) => {
-		  var timer = parseInt(progress.timemark.split(":")[1])
-		  if (!this.is_send)
-		  	console.log(progress.timemark + " | " + timer);
-		  if(timer >= 2 && !this.is_send){
-        res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
-        console.log(res.movie)
-			  res.status(200).send(res.movie)
-			  this.is_send = true;
-		  }
+      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+      .on('progress', (progress) => {
+        let timer = parseInt(progress.timemark.split(':')[1])
+        if (!this.is_send) console.log(progress.timemark + " | " + timer)
+        if (timer >= 2 && !this.is_send) {
+          res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
+          console.log(res.movie)
+          res.status(200).send(res.movie)
+          this.is_send = true
+		    }
 	  })
       .on('end', () => {
         console.log('file has been converted succesfully')
