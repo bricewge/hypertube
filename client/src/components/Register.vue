@@ -1,5 +1,4 @@
 <template>
-<!-- <div class="rgt-cntnr"> -->
 <v-form class="rgt-cntnr"
         v-model="valid"
         ref="form"
@@ -42,7 +41,6 @@
   <span v-show="errors.any()">{{ errors.all() }}</span>
   <br>
   <button>{{ $t('register-btn') }}</button><br><br>
-  <!-- </div> -->
 </v-form>
 </template>
 

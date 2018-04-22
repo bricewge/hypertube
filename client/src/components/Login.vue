@@ -20,16 +20,16 @@
       <br>
       <button>{{ $t('login-btn') }}</button>
       <br><br>
-      <router-link to="/forgot">Forgot password</router-link>
+      <router-link to="/forgot">Forgot password ?</router-link>
     </v-form>
     <h2>{{ $t('or') }}</h2>
-    <button @click="oauth2('42')">
+    <button @click="oauth2('42')" class="oauth-btn">
       <img src='../assets/42.png'>
     </button>
-    <button @click="oauth2('facebook')">
+    <button @click="oauth2('facebook')" class="oauth-btn">
       <img src='../assets/facebook-letter-logo.png'>
     </button>
-    <button @click="oauth2('google')">
+    <button @click="oauth2('google')" class="oauth-btn">
       <img src='../assets/google-plus.png'>
     </button>
   </div>
@@ -101,4 +101,17 @@ export default {
 
 <style scoped lang='scss'>
   @import '../assets/css/login.scss';
+
+  a{
+    color: white;
+  }
+  .oauth-btn:first-of-type{
+    background: white;
+  }
+  .oauth-btn:nth-of-type(2){
+    background: $facebook-blue
+  }
+  .oauth-btn:nth-of-type(3){
+    background: $google-red;
+  }
 </style>

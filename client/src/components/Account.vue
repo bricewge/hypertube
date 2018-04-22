@@ -1,7 +1,7 @@
 <template>
-<v-container fluid fill-height>
+<v-container fluid fill-height class="user-cntnr">
   <v-layout row wrap>
-    <v-flex xs12 sm10 md8>
+    <v-flex class="cntnr">
       <div class="usr-cntnr">
         <img :src="$auth.user().image_url">
       </div>
@@ -41,10 +41,8 @@
           accept="image/png,image/jpeg"
           @change="onFilePicked"
           placeholder="Image"/>
-        <v-btn
-          type="submit"
-          color="primary"
-          >Update</v-btn>
+          <br/><br/>
+        <button type="submit" class="button">Update Profile</button>
       </v-form>
     </v-flex>
   </v-layout>
@@ -104,9 +102,9 @@ export default {
 }
 
 .usr-cntnr img{
-    width: 20em;
-    height: 20em;
-    border-radius: 50%;
+    width: auto;
+    border-radius: .5em;
+    height: 16em;
 }
 
 .usr-cntnr p{
@@ -116,4 +114,19 @@ export default {
     opacity: .8;
     color: $white;
 }
+
+.user-cntnr .cntnr{
+  width: 30em;
+}
+
+.user-cntnr .cntnr form{
+  width: 30em;
+  margin: auto;
+}
+
+button{
+  background: $blue;
+  padding: .5em 1em;
+}
+
 </style>

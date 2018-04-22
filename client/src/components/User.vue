@@ -20,7 +20,7 @@ export default {
   },
 
   async mounted () {
-    const response = await this.axios.get(`/users/${this.$route.params.login}` )
+    const response = await this.axios.get(`/users/${this.$route.params.login}`)
     this.user = response.data
   }
 }
