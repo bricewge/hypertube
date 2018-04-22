@@ -4,6 +4,15 @@
   <div class="player-cntnr">
     <div class="video-cntnr" id="player">
     </div>
+      <p>Casting: {{ movie.casting }}</p>
+      <p>Director: {{ movie.director }}</p>
+      <p>Producer: {{ movie.producer }}</p>
+      <p>Rating: {{ movie.rating }}</p>
+      <p>Year: {{ movie.year }}</p>
+      <p>Summary: {{ movie.summary }}</p>
+      <!-- <p>Duration: {{ movie.length }}</p> -->
+    <div>
+    </div>
     <div class="comment-cntnr">
       <input v-model="comment"
              @keyup.enter="submitComment"
@@ -26,7 +35,7 @@ export default {
 
   data () {
     return {
-      movie: '',
+      movie: {},
       comments: [],
       comment: '',
       player: null
@@ -40,6 +49,7 @@ export default {
       console.log(test)
 
       const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
+      this.movie = response.data
       this.comments = response.data.Comments
 
       this.player = new Clappr.Player({

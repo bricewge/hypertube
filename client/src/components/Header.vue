@@ -8,7 +8,7 @@
     </div>
     <div class="link-cntnr align-rgt">
       <!-- THESE LINKS WILL BE REMOVED -->
-        <div><router-link to="/movie">Show movie</router-link></div>
+        <!-- <div><router-link to="/movie">Show movie</router-link></div> -->
       <!-- END -->
       <div class="lang">
         <img src="../assets/smurf.png" @click="setLang('st')" />
