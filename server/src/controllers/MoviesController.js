@@ -2,13 +2,11 @@ const torrentStream = require('torrent-stream')
 const ffmpeg = require('fluent-ffmpeg')
 const debug = require('debug')('movie')
 const path = require('path')
-const {Movie, Torrent, User, Comment, View} = require('../models')
+const {Movie, Torrent, User, Comment, View, Subtitle} = require('../models')
 const Search = require('./SearchController')
 const Sequelize = require('Sequelize')
 const Op = Sequelize.Op
 const config = require('../config/config')
-
-let torrents = {}
 
 function clearViews (movies, id) {
   for (let i in movies) {
@@ -84,33 +82,32 @@ module.exports = {
   async show (req, res) {
     try {
       if (!req.params.movieId) throw new Error()
-      let movie = await Movie.findOne({where: {imdb_id: req.params.movieId}, include: [{
-        model: Comment,
-        attributes: ['content'],
+      const query = {
+        where: {imdb_id: req.params.movieId},
         include: [{
-          model: User,
-          attributes: ['login']
+          model: Comment,
+          attributes: ['content'],
+          include: [{
+            model: User,
+            attributes: ['login']
+          }]
+        }, {
+          model: Subtitle,
+          attributes: ['file_path', 'language']
         }]
-      }]
-                                      })
-      let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}}) //TODO: edit
+      }
+      let movie = await Movie.findOne(query)
+      let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}})
       res.movie = movie
       res.torrent = torrent
-      console.log(movie)
       if (torrent && !torrent.file_path) {
-         //TODO get other than first torrent
-        let magnetLink = torrent.hash //getMagnetLink(req.params.movieId)
-        //let magnetLink = hashes[0]
-        const engine = torrentStream(
-          magnetLink,
-          {tmp: config.storage}
-        )
+        let engine = torrentStream(torrent.hash, {tmp: config.storage})
         engine.once('ready', () => onEngineReady(engine, res, torrent))
         engine.once('idle', () => onEngineIdle(engine))
-	    } else if (torrent) {
+      } else if (torrent) {
         movie.dataValues.url = '/streams/' + torrent.dataValues.hash.toLowerCase() + '.m3u8'
         res.status(200).send(movie)
-	}
+      }
     } catch (err) {
       console.log(err)
       res.status(499).send({
@@ -135,7 +132,6 @@ function onEngineReady (engine, res, torrent) {
     // We don't want to stream a trailer instead of the movie
     if (!res.file || file.length > res.file.length) res.file = file
   }
-  // TODO Handle if no movies are found
   res.engine = engine
   res.file.select()
   debug(`selected file ${res.file.name} for ${engine.infoHash}`)
@@ -145,8 +141,6 @@ function onEngineReady (engine, res, torrent) {
   torrent.updateAttributes({
     file_path: res.file.path.full
   })
-  // next()
-  // TODO Store in DB | OK
 }
 
 function onEngineIdle (engine) {
@@ -175,7 +169,7 @@ function transcode (streamIn, file, res) {
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
       .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
-      .on('progress', (progress) => {
+      .on('progress', function (progress) {
         let timer = parseInt(progress.timemark.split(':')[1])
         if (!this.is_send) console.log(progress.timemark + " | " + timer)
         if (timer >= 2 && !this.is_send) {
