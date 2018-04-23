@@ -15,7 +15,7 @@ passport.use(new FacebookStrategy(pass.facebook,
       if (!profile._json.email) throw new Error('no email')
       const lang = profile._json.locale ? profile._json.locale.substr(0, 2) : null
       const photo = profile.photos[0] ? profile.photos[0].value : null
-      const query = { where: {facebookId: profile.id},
+      const query = { where: {email: profile._json.email},
         defaults: {
           email: profile._json.email,
           login: profile._json.name,
@@ -37,7 +37,8 @@ passport.use(new FacebookStrategy(pass.facebook,
 passport.use(new GoogleStrategy(pass.google,
   async (accessToken, refreshToken, profile, cb) => {
     try {
-      const query = { where: {googleId: profile.id},
+      if (!profile.emails[0].value) throw new Error('no email')
+      const query = { where: {email: profile.emails[0].value},
         defaults: {
           email: profile.emails[0].value,
           googleId: profile.id,
@@ -58,7 +59,7 @@ passport.use(new GoogleStrategy(pass.google,
 passport.use(new FortyTwoStrategy(pass.fortyTwo,
   async (accessToken, refreshToken, profile, cb) => {
     try {
-      const query = { where: {fortyTwoId: profile.id},
+      const query = { where: {email: profile._json.email},
         defaults: {
           email: profile._json.email,
           fortyTwoId: profile.id,

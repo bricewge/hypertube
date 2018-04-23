@@ -40,7 +40,7 @@
           type="file"
           accept="image/png,image/jpeg"
           @change="onFilePicked"
-          :placeholder="Image"/>
+          placeholder="Image"/>
           <br/><br/>
         <button type="submit" class="button">{{ $t('update-profile') }}</button>
       </v-form>
