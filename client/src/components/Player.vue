@@ -58,7 +58,7 @@ export default {
       const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
       this.movie = response.data
       this.comments = response.data.Comments
-      console.log(this.movie)
+      // console.log(this.movie)
 
       let subtitles = []
       for (let key in response.data.subtitles) {
@@ -76,6 +76,7 @@ export default {
       console.log(subtitles)
 
       this.player = new Clappr.Player({
+        baseUrl: '/static',
         source: '/api' + response.data.url,
         parentId: '#player',
         poster: response.data.image_url,
@@ -85,7 +86,7 @@ export default {
           xhr.setRequestHeader('Authorization', `Bearer ${this.$auth.token()}`)
         }},
         events: {
-          onPlay: function() {
+          onPlay: function () {
             let player = this.core.getCurrentContainer()
             if (player.getPlaybackType() !== 'live') return
             if (player._hasSeek) {
@@ -94,12 +95,12 @@ export default {
             player.seek(0)
             player._hasSeek = true
           },
-          onEnded: async function() {
-            const response = await this.axios.post(
+          onEnded: async () => {
+            await this.axios.post(
               '/views',
               {MovieImdbId: this.$route.params.imdbId})
-            console.log(response)
-            console.log('Viewed')
+            // console.log(response)
+            // console.log('Viewed')
           }
         }
       })
@@ -228,5 +229,9 @@ button{
 .comment p:first-of-type{
   font-size: 1em;
   font-weight: 300;
+}
+
+.cc-controls {
+  display: block;
 }
 </style>

@@ -162,7 +162,7 @@ export default {
     this.loading = false
     this.movies = res.data
     this.sortBy(this.sorts[2]) // By default sort by rating
-    console.log(this.movies)
+    // console.log(this.movies)
     // console.log(this)
     if (this.$auth.check()) {
       await this.$parent.$children[0].setLang(this.$auth.user().language)

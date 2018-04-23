@@ -8,7 +8,7 @@
   </div>
   <div class="link-cntnr align-rgt">
     <div class="lang">
-      <div v-for="lang in languages" :key='lang'>
+      <div v-for="(lang, index) in languages" :key='index'>
         <img :src="lang.image" :ref="lang.name" @click="setLang(lang.name)" />
       </div>
     </div>
