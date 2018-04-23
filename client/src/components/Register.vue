@@ -77,7 +77,7 @@ export default {
           else this.form.delete(key)
         }
         const headers = {'content-type': 'multipart/form-data'}
-        const response = await this.$auth.register({
+        await this.$auth.register({
           data: this.form,
           headers: headers,
           autoLogin: false
