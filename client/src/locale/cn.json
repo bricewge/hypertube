@@ -18,5 +18,21 @@
   "with": "同",
   "your-comment": "你的评论...",
   "ago": " 前",
-  "il-y-a": " "
+  "il-y-a": " ",
+  "casting": "投",
+  "director": "导演",
+  "producer": "制片人",
+  "rating": "注",
+  "year": "年",
+  "summary": "摘要",
+  "duration": "持续时间",
+  "update-profile": "修改配置文件",
+  "image": "图片",
+  "title": "标题",
+  "gender": "样",
+  "rating-min": "最低分数",
+  "rating-max": "最高分",
+  "year-min": "最小的一年",
+  "year-max": "最大年份",
+  "sort-by": "排序"
 }

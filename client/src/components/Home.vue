@@ -12,21 +12,21 @@
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.title"
-            label="Title"
+            :label="$t('title')"
             box
             ></v-text-field>
         </v-flex>
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.genre"
-            label="Genre"
+            :label="$t('gender')"
             box
             ></v-text-field>
         </v-flex>
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.rating.min"
-            label="Rating min"
+            :label="$t('rating-min')"
             type="number"
             step="any"
             box
@@ -35,7 +35,7 @@
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.rating.max"
-            label="Rating max"
+            :label="$t('rating-max')"
             type="number"
             step="any"
             box
@@ -44,7 +44,7 @@
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.year.min"
-            label="Year min"
+            :label="$t('year-min')"
             mask="####"
             type="number"
             step="any"
@@ -54,7 +54,7 @@
         <v-flex xs4 md2>
           <v-text-field
             v-model="filter.year.max"
-            label="Year max"
+            :label="$t('year-max')"
             mask="####"
             type="number"
             step="any"
@@ -64,7 +64,7 @@
         <v-flex xs5 md3>
           <v-text-field
             v-model="search"
-            label="Search"
+            :label="$t('search')"
             @keyup.enter="searchMovies"
             ></v-text-field>
         </v-flex>
@@ -79,7 +79,7 @@
             return-object
             :prepend-icon="sortIcon"
             :prepend-icon-cb="toggleOrder"
-            label="Sort by"
+            :label="$t('sort-by')"
             ></v-select>
         </v-flex>
       </v-layout>
@@ -98,23 +98,24 @@
         slot-scope="props"
         xs12 sm6 md4 lg3
         >
-        <v-card>
+        <v-card class="card">
           <router-link
             :to="`/player/${props.item.imdb_id}`"
             >
             <v-card-media
               :src="props.item.image_url"
               height="400px"
+              class="movie-img"
               >
             </v-card-media>
           </router-link>
-          <v-card-title>
+          <v-card-title class="informations-cntnr">
             <div>
-              <div class="headline" v-text="props.item.userName"/>
-              <span class="grey--text">
-                <p>{{ props.item.title }}</p>
-                <p>{{ props.item.year }} - {{ props.item.rating }}/10</p>
-                <p>{{ props.item.viewed ? 'Viewed' : 'Not viewed' }}</p>
+              <div v-text="props.item.userName"/>
+              <span>
+                <p class="movie-title">{{ props.item.title }}</p>
+                <p class="movie-info">{{ props.item.year }} - {{ props.item.rating }}/10</p>
+                <p class="movie-info">{{ props.item.viewed ? 'Viewed' : 'Not viewed' }}</p>
               </span>
             </div>
           </v-card-title>
@@ -141,14 +142,14 @@ export default {
         title: '',
         genre: '',
         rating: {min: '', max: ''},
-        year: {min:'', max: ''}
+        year: {min: '', max: ''}
       },
       sort: 'Rating',
       sorts: [
-        { text: 'Title', sort: 'title'},
-        { text: 'Genre', sort: 'genre'},
-        { text: 'Rating', sort: 'rating'},
-        { text: 'Year', sort: 'year'},
+        {text: 'Title', sort: 'title'},
+        {text: 'Genre', sort: 'genre'},
+        {text: 'Rating', sort: 'rating'},
+        {text: 'Year', sort: 'year'}
       ],
       sortIcon: 'arrow_downward',
       search: ''
@@ -163,17 +164,18 @@ export default {
     this.sortBy(this.sorts[2]) // By default sort by rating
     console.log(this.movies)
     // console.log(this)
-    if (this.$auth.check())
-    await this.$parent.$children[0].setLang(this.$auth.user().language)
+    if (this.$auth.check()) {
+      await this.$parent.$children[0].setLang(this.$auth.user().language)
+    }
     // console.log(this.$auth.user().language)
   },
 
   computed: {
     filteredMovies () {
       let movies = this.movies
-      if (this.filter.title){
+      if (this.filter.title) {
         movies = movies.filter(movie => movie.title.toLowerCase()
-                               .includes(this.filter.title.toLowerCase()))
+          .includes(this.filter.title.toLowerCase()))
       }
       // TODO Waiting for support of genre in DB
       // if (this.filter.genre){
@@ -186,6 +188,7 @@ export default {
       if (ratingMax) movies = movies.filter(movie => movie.rating <= ratingMax)
       // TODO Waiting for support of year in DB
       let yearMin = parseFloat(this.filter.year.min) || 0
+      console.log(yearMin)
       // if (yearMin) movies = movies.filter(movie => movie.year >= yearMin)
       // let yearMax = parseFloat(this.filter.year.max) || 0
       // if (yearMax) movies = movies.filter(movie => movie.year <= yearMax)
@@ -255,4 +258,39 @@ export default {
   width: 5em;
   opacity: .5;
 }
+
+.informations-cntnr{
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: $darker !important;
+  margin-bottom: .7em;
+}
+
+.movie-title{
+  margin: .6em 0 .1em 0;
+  font-weight: bold;
+  font-size: 1.1em;
+  opacity: .9;
+}
+
+.informations-cntnr div{
+  width: 100%;
+}
+
+.movie-info{
+  margin: .1em;
+  padding: 0;
+  opacity: .6;
+}
+
+.movie-img{
+  overflow: hidden;
+  border-radius: 1em;
+}
+
+.card{
+  background: $darker !important;
+}
+
 </style>

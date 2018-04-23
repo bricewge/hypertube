@@ -16,6 +16,7 @@
   "dependencies": {
     "@websanova/vue-auth": "^2.21.6-beta",
     "axios": "^0.18.0",
+    "clappr": "^0.2.92",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.7",
     "srt-webvtt": "^1.0.1",
