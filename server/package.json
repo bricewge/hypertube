@@ -10,7 +10,8 @@
     "lint": "./node_modules/.bin/eslint **/*.js",
     "init": "./node_modules/.bin/sequelize db:create --config src/config/db.js && node ./src/script/initTop.js",
     "seed": "node ./src/script/initTop.js",
-    "test": "node ./src/script/tester.js"
+    "test": "node ./src/script/tester.js",
+    "clean": "node ./src/script/clean.js"
   },
   "keywords": [],
   "license": "ISC",
