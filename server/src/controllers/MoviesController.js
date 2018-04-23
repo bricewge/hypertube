@@ -161,28 +161,30 @@ function transcode (streamIn, file, res) {
     '-preset ultrafast'
   ]
   try {
-    ffmpeg(streamIn).addOptions(opts)
+    let title = false
+    new ffmpeg(streamIn).addOptions(opts)
+    .on('end', () => {
+      console.log('file has been converted succesfully')
+    })
+    .on('error', (err, stdout, stderr) => {
+      console.log('an error happened: ' + err.message, stdout, stderr)
+    })
+    .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+    .on('progress', (progress) => {
+      let timer = parseInt(progress.timemark.split(':')[1])
+      if (!title) console.log(progress.timemark + " | " + timer)
+      if (timer >= 2 && !title) {
+        res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
+        console.log(res.movie)
+        res.status(200).send(res.movie)
+        title = true
+      }
+  })
       .format('hls')
       .videoCodec('libx264')
       .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
-      .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
-      .on('progress', function (progress) {
-        let timer = parseInt(progress.timemark.split(':')[1])
-        if (!this.is_send) console.log(progress.timemark + " | " + timer)
-        if (timer >= 2 && !this.is_send) {
-          res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
-          console.log(res.movie)
-          res.status(200).send(res.movie)
-          this.is_send = true
-		    }
-	  })
-      .on('end', () => {
-        console.log('file has been converted succesfully')
-      })
-      .on('error', (err, stdout, stderr) => {
-        console.log('an error happened: ' + err.message, stdout, stderr)
-      })
+
   } catch (err) { console.log(err) }
 }
