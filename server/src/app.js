@@ -7,6 +7,7 @@ const passport = require('./passport.js')
 const { errors } = require('celebrate')
 const path = require('path')
 const url = require('url')
+const request = require('request')
 
 const config = require('./config/config')
 const app = express()
@@ -16,6 +17,13 @@ app.use(cors())
 
 const uploadPath = path.join(__dirname, '..', config.upload.dest)
 app.use(url.resolve('/', config.upload.dest), express.static(uploadPath))
+// NOTE Hackish proxy
+app.use('/subs', function (req, res) {
+  if (!req.url.includes('dl.opensubtitles.org')) res.sendStatus(400)
+  var url = 'https:/' + req.url
+  console.log(url)
+  req.pipe(request(url)).pipe(res)
+})
 
 require('./routes')(app, passport)
 app.use(errors())

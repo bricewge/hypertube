@@ -9,10 +9,7 @@
     "start": "./node_modules/nodemon/bin/nodemon.js src/app.js --exec 'npm run lint && node'",
     "lint": "./node_modules/.bin/eslint **/*.js",
     "init": "./node_modules/.bin/sequelize db:create --config src/config/db.js && node ./src/script/initTop.js",
-<<<<<<< HEAD
-=======
     "seed": "node ./src/script/initTop.js",
->>>>>>> 5ee3b7ef9f774549de81f8bfb8ae397f271de453
     "test": "node ./src/script/tester.js"
   },
   "keywords": [],
@@ -46,7 +43,6 @@
     "request": "^2.85.0",
     "sequelize": "^4.37.4",
     "sequelize-cli": "^4.0.0",
-    "srt-to-vtt": "^1.1.2",
     "torrent-stream": "^1.0.4"
   },
   "devDependencies": {

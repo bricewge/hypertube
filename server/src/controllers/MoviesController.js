@@ -91,13 +91,12 @@ module.exports = {
             model: User,
             attributes: ['login']
           }]
-        }, {
-          model: Subtitle,
-          attributes: ['file_path', 'language']
         }]
       }
       let movie = await Movie.findOne(query)
       let torrent = await Torrent.findOne({where: {imdb_id: req.params.movieId}})
+      let subtitles = await Subtitle.findAll({where: {imdb_id: req.params.movieId}})
+      movie.dataValues.subtitles = subtitles
       res.movie = movie
       res.torrent = torrent
       if (torrent && !torrent.file_path) {

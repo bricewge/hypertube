@@ -1,6 +1,5 @@
 let request = require('request');
 let cheerio = require('cheerio');
-var srt2vtt = require('srt-to-vtt')
 var fs = require('fs')
 
 const THE_PIRATEBAY_URI = "https://thepiratebay.red"
@@ -149,11 +148,12 @@ function search_subtitle(imdb_id, callback){
 			imdbid: imdb_id,
       sublanguageid: "fre,eng,chi"
 		}).then(async subtitles => {
+      try {
 			var ttt = []
 			for (var key in subtitles) {
 				var r = subtitles[key];
 				var res = {
-					MovieImdbId: imdb_id,
+					imdb_id: imdb_id,
 					file_path: r["url"],
 					language: key,
 					opensub_id: r["id"]
@@ -162,6 +162,9 @@ function search_subtitle(imdb_id, callback){
 				await Subtitle.create(res);
 			}
 			callback(res);
+    } catch (err) {
+      console.log(err)
+    }
 		});
 	}, Math.random() * 15000);
 }
