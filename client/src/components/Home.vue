@@ -45,7 +45,7 @@
           <v-text-field
             v-model="filter.year.min"
             :label="$t('year-min')"
-            mask="####"
+
             type="number"
             step="any"
             box
@@ -55,7 +55,6 @@
           <v-text-field
             v-model="filter.year.max"
             :label="$t('year-max')"
-            mask="####"
             type="number"
             step="any"
             box
@@ -178,20 +177,18 @@ export default {
           .includes(this.filter.title.toLowerCase()))
       }
       // TODO Waiting for support of genre in DB
-      // if (this.filter.genre){
-      //   movies = movies.filter(movie => movie.genre.toLowerCase()
-      //                          .includes(this.filter.genre.toLowerCase()))
-      // }
+      if (this.filter.genre) {
+        movies = movies.filter(movie => movie.genre.toLowerCase().includes(this.filter.genre.toLowerCase()))
+      }
       let ratingMin = parseFloat(this.filter.rating.min) || 0
       if (ratingMin) movies = movies.filter(movie => movie.rating >= ratingMin)
       let ratingMax = parseFloat(this.filter.rating.max) || 0
       if (ratingMax) movies = movies.filter(movie => movie.rating <= ratingMax)
-      // TODO Waiting for support of year in DB
       let yearMin = parseFloat(this.filter.year.min) || 0
-      console.log(yearMin)
-      // if (yearMin) movies = movies.filter(movie => movie.year >= yearMin)
-      // let yearMax = parseFloat(this.filter.year.max) || 0
-      // if (yearMax) movies = movies.filter(movie => movie.year <= yearMax)
+      //  console.log(yearMin)
+      if (yearMin) movies = movies.filter(movie => movie.year >= yearMin)
+      let yearMax = parseFloat(this.filter.year.max) || 0
+      if (yearMax) movies = movies.filter(movie => movie.year <= yearMax)
       return movies
     }
   },

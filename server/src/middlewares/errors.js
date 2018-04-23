@@ -5,7 +5,7 @@ module.exports = (app) => {
       err.statusCode = 499
       err.message = 'Internal server error'
     }
-    console.log(err)
+    //  console.log(err)
     return res
       .status(err.statusCode)
       .json({ error: err.statusCode, message: err.message })

@@ -70,8 +70,8 @@ export default {
     },
 
     async register () {
-      if (!await this.$validator.validateAll()) return
       try {
+        if (!await this.$validator.validateAll()) return
         for (let key in this.user) {
           if (this.user[key]) this.form.set(key, this.user[key])
           else this.form.delete(key)
@@ -82,7 +82,7 @@ export default {
           headers: headers,
           autoLogin: false
         })
-        console.log(response)
+        //  console.log(response)
         await this.$auth.login({ data: {
           email: this.user.email,
           password: this.user.password

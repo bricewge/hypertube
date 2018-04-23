@@ -24,7 +24,7 @@ module.exports = {
   validateRegister: celebrate(
     {body: Joi.object().keys({
       email: Joi.string().email(),
-      password: Joi.string().min(8),
+      password: Joi.string().regex(/^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])([\w\-\.\_ ]+)$/).error(new Error('Password must have at least one lowercase, one uppercase, and one number')),
       name: Joi.string().alphanum(),
       firstname: Joi.string().alphanum(),
       login: Joi.string().alphanum()
@@ -59,7 +59,7 @@ module.exports = {
   // TODO Write valdiator
   async login (req, res) {
     try {
-      console.log(req.body, req.user)
+      //  console.log(req.body, req.user)
       let user
       if (!req.user) {
         const {email, password} = req.body
@@ -99,7 +99,7 @@ module.exports = {
       req.id = decoded.id
       next()
     } catch (err) {
-      // console.log(err)
+      //  console.log(err)
       res.status(400).send({
         error: 'Invalid token'
       })

@@ -42,6 +42,7 @@
           @change="onFilePicked"
           placeholder="Image"/>
           <br/><br/>
+          <v-alert type="error" :value="error" transition="scale-transition" v-html="error"/>
         <button type="submit" class="button">{{ $t('update-profile') }}</button>
       </v-form>
     </v-flex>
@@ -66,7 +67,8 @@ export default {
       form: new FormData(),
       emailRules: [ validEmail ],
       passwordRules: [ validPassword ],
-      valid: true
+      valid: true,
+      error: ''
     }
   },
 
@@ -78,18 +80,22 @@ export default {
     },
 
     async submit () {
-      if (!this.$refs.form.validate()) return
-      for (let key in this.user) {
-        if (this.user[key]) this.form.set(key, this.user[key])
-        else this.form.delete(key)
+      try {
+        if (!this.$refs.form.validate()) return
+        for (let key in this.user) {
+          if (this.user[key]) this.form.set(key, this.user[key])
+          else this.form.delete(key)
+        }
+        // for(const pair of this.form.entries()) {
+        //   console.log(pair[0]+ ', '+ pair[1]);
+        // }
+        // if (!data.length) return
+        const config = {headers: {'content-type': 'multipart/form-data'}}
+        await this.axios.put('/account', this.form, config)
+        await this.$auth.fetch() // Get new account settings
+      } catch (err) {
+        this.error = err.response.data.message || err.response.data.error
       }
-      // for(const pair of this.form.entries()) {
-      //   console.log(pair[0]+ ', '+ pair[1]);
-      // }
-      // if (!data.length) return
-      const config = {headers: {'content-type': 'multipart/form-data'}}
-      await this.axios.put('/account', this.form, config)
-      await this.$auth.fetch() // Get new account settings
     }
   }
 }

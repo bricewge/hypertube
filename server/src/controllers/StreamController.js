@@ -25,8 +25,8 @@ module.exports = {
       stream.pipe(res)
     } catch (err) {
       if (err.code === 'ENOENT') res.status(404).send()
-      console.log(err)
-      res.status(500).send()
+      //  console.log(err)
+      res.status(499).send()
     }
   }
 }

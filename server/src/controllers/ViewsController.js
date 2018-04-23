@@ -8,7 +8,7 @@ module.exports = {
       })
       res.status(200).send(views)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the views'
       })
     }
@@ -18,7 +18,7 @@ module.exports = {
       const views = await View.findAll({where: {movie_id: req.params.movieId}})
       res.status(200).send(views)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the view'
       })
     }
@@ -29,8 +29,8 @@ module.exports = {
       const view = await View.findOrCreate({where: req.body})
       res.status(201).send(view)
     } catch (err) {
-      console.log(err)
-      res.status(500).send({
+      //  console.log(err)
+      res.status(499).send({
         error: 'An error has occured trying to create the view'
       })
     }

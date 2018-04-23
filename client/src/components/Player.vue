@@ -1,9 +1,6 @@
 <template>
 <div>
-  <div v-if='!loaded' class="load">
-    <img src='../assets/spinner.mov.gif'/>
-  </div>
-  <div v-else>
+  <div>
     <div class="bck-cntnr" v-bind:style="{ backgroundImage: 'url(' + movie.image_url + ')' }"></div>
     <div class="main-cntnr">
       <div class="left-cntnr">
@@ -20,7 +17,7 @@
         <p>{{ $t('duration') }}: {{ movie.duration }}</p>
         <div class="video-cntnr player-cntnr" id="player">
         </div>
-        <div class="comment-cntnr">
+        <div class="comment-cntnr" v-if='loaded'>
           <input v-model="comment"
                  @keyup.enter="submitComment"
                  type="text"
@@ -78,7 +75,6 @@ export default {
       for (let key in response.data.subtitles) {
         let sub = response.data.subtitles[key]
         let url = '/subs' + sub.file_path.substr(6)
-        console.log(url)
         let srt = await this.axios.get(url, {responseType: 'blob'})
         let vttConverter = new VTTConverter(srt.data)
         subtitles.push({
@@ -87,7 +83,6 @@ export default {
           label: sub.language
         })
       }
-      console.log(subtitles)
 
       this.player = new Clappr.Player({
         baseUrl: '/static',
@@ -124,11 +119,9 @@ export default {
   },
 
   async beforeDestroy () {
-    console.log('Unmonted')
     if (this.player) this.player.destroy()
     if (this.cancel) {
       this.cancel()
-      console.log('canceled')
     }
   },
 
@@ -143,7 +136,7 @@ export default {
         this.comments.push(comment)
         this.comment = ''
       } catch (err) {
-        console.log(err)
+        //  console.log(err)
       }
     }
   }

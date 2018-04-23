@@ -71,11 +71,10 @@ export default {
   methods: {
     async login () {
       try {
-        const response = await this.$auth.login({ data: {
+        await this.$auth.login({ data: {
           email: this.email,
           password: this.password
         }})
-        console.log(response)
       } catch (err) {
         this.error = err.response.data.error
       }

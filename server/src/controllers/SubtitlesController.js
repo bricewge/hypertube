@@ -8,7 +8,7 @@ module.exports = {
       })
       res.status(200).send(subtitles)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the subtitles'
       })
     }
@@ -18,7 +18,7 @@ module.exports = {
       const subtitles = await Subtitle.findAll({where: {movie_id: req.params.movieId}})
       res.status(200).send(subtitles)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error occured trying to fetch the subtitles'
       })
     }
@@ -28,7 +28,7 @@ module.exports = {
       const subtitles = await Subtitle.create(req.body)
       res.status(201).send(subtitles)
     } catch (err) {
-      res.status(500).send({
+      res.status(499).send({
         error: 'An error has occured trying to create the subtitles'
       })
     }

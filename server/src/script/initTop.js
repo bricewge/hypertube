@@ -17,7 +17,7 @@ sequelize.sync()
 					Search.search_subtitle(value["imdb_id"], () => {});
 				}
 			}
-			console.log(">", lst);
+			//  console.log(">", lst);
 			Search.search_imdb_data_by_imdb_id_list(lst, (values) => {console.log("END!!!");process.exit(0);});
         }
     )

@@ -35,7 +35,7 @@ export default{
   },
 
   async mounted () {
-    console.log(this.$auth.user().language)
+    //  console.log(this.$auth.user().language)
     if (!this.$auth.check()) return
     await this.setLang(this.$auth.user().language)
   },

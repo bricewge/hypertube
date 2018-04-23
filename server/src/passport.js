@@ -48,7 +48,7 @@ passport.use(new GoogleStrategy(pass.google,
           image_url: profile.photos[0].value
         }}
       const result = await User.findOrCreate(query)
-      console.log(profile, result)
+      //  console.log(profile, result)
       cb(null, result[0].dataValues)
     } catch (err) {
       cb(err.message)

@@ -31,7 +31,7 @@ module.exports = {
           limit: parseInt(req.query.limit) || 50,
           where: {
             title: {
-              [Op.like]: "%" + req.query.q + "%"
+              [Op.like]: '%' + req.query.q + '%'
             }
           },
           include: [{
@@ -39,25 +39,22 @@ module.exports = {
           }]
         })
         movies = clearViews(movies, req.id)
-          if (movies.length === 0)
-            Search.search_movie(req.query.q, async get_movies => {
-				res.send(get_movies);
-				var lst_movie = []
-				for (var i = 0; i < get_movies.length; i++) {
-					var movie = get_movies[i];
-					if (!movie || !movie["imdb_id"])
-						continue;
-					let torrent = await Torrent.findOne({where: {imdb_id: movie["imdb_id"]}})
-					if (!torrent)
-					{
-						lst_movie.push(movie["imdb_id"]);
-					}
-				}
-				console.log(lst_movie);
-				Search.search_torrent_by_imdb_id_list(lst_movie, () => {console.log("Search for " + req.query.q + "finished !")});
-			}, req.query.q)
-          else
-            res.send(movies);
+        if (movies.length === 0) {
+          Search.search_movie(req.query.q, async get_movies => {
+            res.send(get_movies)
+            var lst_movie = []
+            for (var i = 0; i < get_movies.length; i++) {
+              var movie = get_movies[i]
+              if (!movie || !movie['imdb_id']) { continue }
+              let torrent = await Torrent.findOne({where: {imdb_id: movie['imdb_id']}})
+              if (!torrent) {
+                lst_movie.push(movie['imdb_id'])
+              }
+            }
+            //  console.log(lst_movie)
+            Search.search_torrent_by_imdb_id_list(lst_movie, () => { console.log('Search for ' + req.query.q + 'finished !') })
+          }, req.query.q)
+        } else { res.send(movies) }
       } else {
         let movies = await Movie.findAll({
           limit: parseInt(req.query.limit) || 50,
@@ -70,7 +67,7 @@ module.exports = {
         res.send(movies)
       }
     } catch (err) {
-      console.log(err);
+      //  console.log(err)
       res.status(499).send({
         error: 'An error occured trying to fetch the movies'
       })
@@ -108,7 +105,7 @@ module.exports = {
         res.status(200).send(movie)
       }
     } catch (err) {
-      console.log(err)
+      //  console.log(err)
       res.status(499).send({
         error: 'An error occured trying to fetch the movie'
       })
@@ -120,7 +117,7 @@ function onEngineReady (engine, res, torrent) {
   debug(`start downloading: ${engine.infoHash}`)
   for (let i in engine.files) {
     let file = engine.files[i]
-    console.log(file.name)
+    //  console.log(file.name)
     file.path = path.parse(file.name)
     file.type = file.path.ext.toLowerCase().substr(1)
     if (config.formats.native.includes(file.type)) file.transcoded = false
@@ -163,28 +160,27 @@ function transcode (streamIn, file, res) {
   try {
     let title = false
     new ffmpeg(streamIn).addOptions(opts)
-    .on('end', () => {
-      console.log('file has been converted succesfully')
-    })
-    .on('error', (err, stdout, stderr) => {
-      console.log('an error happened: ' + err.message, stdout, stderr)
-    })
-    .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
-    .on('progress', (progress) => {
-      let timer = parseInt(progress.timemark.split(':')[1])
-      if (!title) console.log(progress.timemark + " | " + timer)
-      if (timer >= 2 && !title) {
-        res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
-        console.log(res.movie)
-        res.status(200).send(res.movie)
-        title = true
-      }
-  })
+      //  .on('end', () => {
+      //    console.log('file has been converted succesfully')
+      //  })
+      //  .on('error', (err, stdout, stderr) => {
+      //  console.log('an error happened: ' + err.message, stdout, stderr)
+      //  })
+      //  .on('progress', (progress) => { console.log(`Frame ${progress.frames}`) })
+      .on('progress', (progress) => {
+        let timer = parseInt(progress.timemark.split(':')[1])
+        //  if (!title) console.log(progress.timemark + ' | ' + timer)
+        if (timer >= 2 && !title) {
+          res.movie.dataValues.url = '/streams/' + res.engine.infoHash + '.m3u8'
+          //  console.log(res.movie)
+          res.status(200).send(res.movie)
+          title = true
+        }
+      })
       .format('hls')
       .videoCodec('libx264')
       .audioCodec('aac')
       .outputOption('-movflags frag_keyframe+faststart')
       .save(file)
-
-  } catch (err) { console.log(err) }
+  } catch (err) { /* console.log(err) */ }
 }

@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    genre: {
+      type: DataTypes.STRING
+    },
     director: DataTypes.STRING,
     producer: DataTypes.STRING,
     casting: DataTypes.STRING,

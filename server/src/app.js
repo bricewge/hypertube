@@ -21,7 +21,7 @@ app.use(url.resolve('/', config.upload.dest), express.static(uploadPath))
 app.use('/subs', function (req, res) {
   if (!req.url.includes('dl.opensubtitles.org')) res.sendStatus(400)
   var url = 'https:/' + req.url
-  console.log(url)
+  // console.log(url)
   req.pipe(request(url)).pipe(res)
 })
 

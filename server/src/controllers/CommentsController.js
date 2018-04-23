@@ -33,10 +33,10 @@ module.exports = {
           }
         }]
       })
-      console.log(comments)
+      //  console.log(comments)
       res.status(200).send(comments)
     } catch (err) {
-      console.log(err)
+      //  console.log(err)
       res.status(499).send({
         error: 'An error occured trying to fetch the comment'
       })
@@ -53,19 +53,17 @@ module.exports = {
   }),
 
   async post (req, res) {
-    console.log(req.body)
+    //  console.log(req.body)
     try {
       const comments = await Comment.create({
         UserId: parseInt(req.id),
         content: req.body.content,
         MovieImdbId: req.body.imdb_id
       })
-      console.log(comments)
       try {
         const user = await User.findById(req.id)
         try {
           const movie = await Movie.findOne({where: {imdb_id: req.body.imdb_id}})
-          console.log(movie)
           const result = {
             id: comments.dataValues.id,
             created_at: comments.dataValues.created_at,
@@ -89,22 +87,21 @@ module.exports = {
               rating: movie.rating
             }
           }
-          console.log(result)
           res.send(result)
         } catch (err) {
-          console.log(err)
+          //  console.log(err)
           res.status(499).send({
             error: 'An error has occured trying to get the movie'
           })
         }
       } catch (err) {
-        console.log(err)
+        //  console.log(err)
         res.status(499).send({
           error: 'An error has occured trying to get the user'
         })
       }
     } catch (err) {
-      console.log(err)
+      //  console.log(err)
       res.status(499).send({
         error: 'An error has occured trying to create the comment'
       })
