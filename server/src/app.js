@@ -30,7 +30,8 @@ app.use(errors())
 require('./middlewares/errors')(app)
 sequelize.sync()
   .then(() => {
-    app.listen(config.port)
+    let server = app.listen(config.port)
+    server.timeout = 10 * 60 * 1000
     console.log(`Serveur started on port ${config.port}`)
   })
   .catch(err => {

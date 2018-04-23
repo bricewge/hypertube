@@ -1,6 +1,9 @@
 <template>
 <div>
-  <div>
+  <div v-if='!loaded' class="load">
+    <img src='../assets/spinner.mov.gif'/>
+  </div>
+  <div v-else>
     <div class="bck-cntnr" v-bind:style="{ backgroundImage: 'url(' + movie.image_url + ')' }"></div>
     <div class="main-cntnr">
       <div class="left-cntnr">
@@ -14,7 +17,7 @@
         <p>{{ $t('rating') }}: {{ movie.rating }}</p>
         <p>{{ $t('year') }}: {{ movie.year }}</p>
         <p>{{ $t('summary') }}: {{ movie.summary }}</p>
-        <!-- <p>{{ $t('duration') }}: {{ movie.length }}</p> -->
+        <p>{{ $t('duration') }}: {{ movie.duration }}</p>
         <div class="video-cntnr player-cntnr" id="player">
         </div>
         <div class="comment-cntnr">
@@ -47,18 +50,29 @@ export default {
       movie: {},
       comments: [],
       comment: '',
-      player: null
+      player: null,
+      cancel: null,
+      loaded: false
     }
   },
 
-  async mounted () {
+  async beforeMount () {
     try {
       if (!this.$route.params.imdbId) return
 
-      const response = await this.axios.get(`/movies/${this.$route.params.imdbId}`)
+      const response = await this.axios.get(
+        `/movies/${this.$route.params.imdbId}`,
+        {
+          timeout: 10 * 60 * 1000,
+          cancelToken: new this.axios.CancelToken((c) => {
+            this.cancel = c
+          })
+        }
+      )
       this.movie = response.data
       this.comments = response.data.Comments
       // console.log(this.movie)
+      this.loaded = true
 
       let subtitles = []
       for (let key in response.data.subtitles) {
@@ -105,12 +119,17 @@ export default {
         }
       })
     } catch (err) {
-      console.log(err)
+      // console.log(err)
     }
   },
 
-  async unmounted () {
+  async beforeDestroy () {
+    console.log('Unmonted')
     if (this.player) this.player.destroy()
+    if (this.cancel) {
+      this.cancel()
+      console.log('canceled')
+    }
   },
 
   methods: {
@@ -233,5 +252,10 @@ button{
 
 .cc-controls {
   display: block;
+}
+
+.load img{
+  width: 5em;
+  opacity: .5;
 }
 </style>
