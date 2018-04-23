@@ -49,9 +49,9 @@ module.exports = {
     {body: Joi.object().keys({
       email: Joi.string().email(),
       password: Joi.string().min(8),
-      name: Joi.string().alphanum(),
-      firstname: Joi.string().alphanum(),
-      login: Joi.string().alphanum(),
+      name: Joi.string(),
+      firstname: Joi.string(),
+      login: Joi.string(),
       language: Joi.string().alphanum()
     })}),
 
